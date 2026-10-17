@@ -28,7 +28,7 @@
     const top = create('div', 'card-top');
     top.append(create('span', 'card-step', index === 0 ? 'START · 00' : `STEP ${step.number}`));
     if (index === 0) top.append(create('span', 'prompt-count', '먼저 읽기'));
-    else if (step.prompts.length > 1) top.append(create('span', 'prompt-count', '단계 · 내 결정'));
+    else if (step.prompts.length > 1) top.append(create('span', 'prompt-count', step.badge || '단계 · 내 결정'));
     const content = create('div', 'card-content');
     const row = create('div', 'card-title-row');
     const arrow = create('span', 'card-arrow', '↗'); arrow.setAttribute('aria-hidden', 'true');
@@ -43,7 +43,7 @@
     const key = `${steps[active].id}:${prompt.id}`;
     if (!drafts.has(key)) {
       const fields = builder.getFields(prompt.text);
-      drafts.set(key, { fields, values: fields.map(() => ''), result: null, hasGenerated: false, invalid: new Set(), message: '', messageError: false });
+      drafts.set(key, { template: prompt.text, recordCount: 1, fields, values: fields.map(() => ''), result: null, hasGenerated: false, invalid: new Set(), message: '', messageError: false });
     }
     return drafts.get(key);
   }
@@ -61,7 +61,7 @@
     viewRevision++;
     resetCopy();
     $('copy-prompt').disabled = !ready;
-    $('prompt-text').textContent = draft.result === null ? prompt.text : draft.result;
+    $('prompt-text').textContent = draft.result === null ? draft.template : draft.result;
     $('output-title').textContent = !hasFields ? '프롬프트' : ready ? '02 · 완성된 프롬프트' : '02 · 기본 템플릿';
     $('output-hint').textContent = !hasFields ? '그대로 복사해 AI 대화에 붙여 넣으세요.' : ready ? '입력한 내용이 반영되었습니다. 확인 후 복사하세요.' : '입력 항목을 채우고 프롬프트를 생성하면 복사할 수 있습니다.';
     $('input-progress').textContent = `${draft.values.filter(value => value.trim()).length} / ${draft.fields.length} 항목 입력`;
@@ -75,17 +75,44 @@
     $('prompt-form').hidden = draft.fields.length === 0;
     $('prompt-panel').classList.toggle('is-readonly', draft.fields.length === 0);
     const prompt = steps[active].prompts[activePrompt];
-    $('prompt-instruction').textContent = prompt.kind === 'main'
+    $('prompt-instruction').textContent = prompt.instruction || (prompt.kind === 'main'
       ? '내 정보 입력 → 프롬프트 생성 → 복사 · 공통 지침 자동 포함'
       : prompt.kind === 'decision'
         ? 'AI 답변을 검토한 뒤 작성 → 같은 단계 채팅에 붙여 넣기 → 결과 요약 갱신'
-        : '모든 단계 프롬프트에 자동으로 포함되는 공통 지침입니다.';
-    const preparations = steps[active].preparations || [];
-    $('preparation-panel').hidden = prompt.kind !== 'main' || preparations.length === 0;
+        : '모든 단계 프롬프트에 자동으로 포함되는 공통 지침입니다.');
+    const preparations = prompt.preparations || steps[active].preparations || [];
+    $('preparation-panel').hidden = prompt.kind === 'decision' || preparations.length === 0;
     $('preparation-panel').open = false;
     $('preparation-title').textContent = `준비할 자료·정보 (${preparations.length})`;
     $('preparation-list').replaceChildren(...preparations.map(item => create('li', '', item)));
+    $('add-record').hidden = !prompt.repeatSection;
+    $('input-help').textContent = prompt.repeatSection
+      ? '자료마다 원문 정보와 내 해석을 입력하세요. 자료가 여러 개면 ‘자료 추가’를 누르세요. 해석을 비우면 ‘사용자 해석 미입력’으로 표시합니다. 나머지 미확인 항목은 ‘확인 필요’라고 적어주세요.'
+      : '각 항목을 입력하세요. 아직 모르면 ‘확인 필요’, 해당하지 않으면 ‘해당 없음’을 적어주세요.';
+    const recordContainers = new Map();
+    let lastSection = '';
     draft.fields.forEach((field, index) => {
+      let container = $('prompt-fields');
+      const isRecord = prompt.repeatSection && field.section === prompt.repeatSection;
+      if (isRecord) {
+        if (!recordContainers.has(field.recordIndex)) {
+          const record = create('fieldset', 'research-record');
+          record.append(create('legend', '', `자료 ${field.recordIndex + 1}`));
+          const remove = create('button', 'record-remove', `자료 ${field.recordIndex + 1} 삭제`);
+          remove.id = `remove-record-${field.recordIndex}`;
+          remove.type = 'button';
+          remove.disabled = draft.recordCount === 1;
+          remove.addEventListener('click', () => changeRecords(field.recordIndex));
+          record.append(remove);
+          container.append(record);
+          recordContainers.set(field.recordIndex, record);
+        }
+        container = recordContainers.get(field.recordIndex);
+      } else if (prompt.repeatSection && field.section !== lastSection) {
+        container.append(create('h5', 'field-section-title', field.section));
+      }
+      lastSection = field.section;
+      const optionalInterpretation = isRecord && field.label === '내가 분석·해석한 내용';
       const group = create('div', 'prompt-field');
       const inputId = `input-${steps[active].id}-${steps[active].prompts[activePrompt].id}-${field.id}`;
       const label = create('label', '', field.label);
@@ -94,17 +121,19 @@
       input.id = inputId;
       input.name = field.id;
       input.rows = 3;
-      input.required = true;
+      input.required = !optionalInterpretation;
       input.value = draft.values[index];
       input.placeholder = field.placeholder || '내용을 입력하거나 자료를 붙여 넣으세요.';
-      const hint = create('p', 'field-hint', '양식 내용이나 파일명을 적어주세요. 실제 파일은 AI 대화에 직접 첨부해야 합니다.');
+      const hint = create('p', 'field-hint', optionalInterpretation
+        ? '직접 해석한 내용이 없으면 비워두세요. 생성 시 ‘사용자 해석 미입력’으로 표시합니다.'
+        : '양식 내용이나 파일명을 적어주세요. 실제 파일은 AI 대화에 직접 첨부해야 합니다.');
       hint.id = `${inputId}-hint`;
-      hint.hidden = !field.isAttachment;
+      hint.hidden = !field.isAttachment && !optionalInterpretation;
       const error = create('p', 'field-error', '이 항목을 입력해주세요. 모르면 ‘확인 필요’라고 적을 수 있습니다.');
       error.id = `${inputId}-error`;
       error.hidden = !draft.invalid.has(index);
       input.setAttribute('aria-invalid', String(draft.invalid.has(index)));
-      input.setAttribute('aria-describedby', `input-help ${field.isAttachment ? hint.id + ' ' : ''}${error.id}`);
+      input.setAttribute('aria-describedby', `input-help ${!hint.hidden ? hint.id + ' ' : ''}${error.id}`);
       input.addEventListener('input', () => {
         draft.values[index] = input.value;
         draft.result = null;
@@ -116,10 +145,39 @@
         updateResult();
       });
       group.append(label, input, hint, error);
-      $('prompt-fields').append(group);
-      fieldControls.push({ input, error });
+      container.append(group);
+      fieldControls.push({ input, error, optionalInterpretation });
     });
   }
+  function changeRecords(removeIndex) {
+    const prompt = steps[active].prompts[activePrompt];
+    const draft = currentDraft();
+    if (!prompt.repeatSection || (removeIndex !== undefined && draft.recordCount === 1)) return;
+    const indices = draft.fields.map((field, index) => ({ field, index }))
+      .filter(({ field }) => field.section === prompt.repeatSection);
+    const fieldsPerRecord = indices.length / draft.recordCount;
+    if (removeIndex === undefined) {
+      draft.values.splice(indices[indices.length - 1].index + 1, 0, ...Array(fieldsPerRecord).fill(''));
+      draft.recordCount++;
+    } else {
+      const first = indices.find(({ field }) => field.recordIndex === removeIndex);
+      if (!first) return;
+      draft.values.splice(first.index, fieldsPerRecord);
+      draft.recordCount--;
+    }
+    draft.template = builder.expandRepeatSection(prompt.text, draft.recordCount, prompt.repeatSection);
+    draft.fields = builder.getFields(draft.template);
+    draft.result = null;
+    draft.invalid.clear();
+    draft.message = `자료 ${draft.recordCount}개를 입력할 수 있습니다. 내용을 확인하고 프롬프트를 생성하세요.`;
+    draft.messageError = false;
+    renderFields();
+    updateResult();
+    const targetRecord = removeIndex === undefined ? draft.recordCount - 1 : Math.min(removeIndex, draft.recordCount - 1);
+    const target = draft.fields.findIndex(field => field.section === prompt.repeatSection && field.recordIndex === targetRecord);
+    if (target >= 0) fieldControls[target].input.focus();
+  }
+  $('add-record').addEventListener('click', () => changeRecords());
   function showPrompt(index, focusTab = false) {
     activePrompt = index;
     const prompt = steps[active].prompts[index];
@@ -137,9 +195,9 @@
     event.preventDefault();
     const draft = currentDraft();
     draft.invalid.clear();
-    fieldControls.forEach(({ input, error }, index) => {
+    fieldControls.forEach(({ input, error, optionalInterpretation }, index) => {
       draft.values[index] = input.value;
-      const missing = !input.value.trim();
+      const missing = !optionalInterpretation && !input.value.trim();
       if (missing) draft.invalid.add(index);
       input.setAttribute('aria-invalid', String(missing));
       error.hidden = !missing;
@@ -152,11 +210,14 @@
       fieldControls[[...draft.invalid][0]].input.focus();
       return;
     }
-    draft.result = builder.build(steps[active].prompts[activePrompt].text, draft.values);
+    draft.result = builder.build(draft.template, draft.values.map((value, index) =>
+      fieldControls[index].optionalInterpretation && !value.trim() ? '사용자 해석 미입력' : value));
     draft.hasGenerated = true;
     draft.message = steps[active].prompts[activePrompt].kind === 'decision'
       ? '내 결정문을 완성했습니다. 같은 단계 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
-      : '공통 지침을 포함한 프롬프트를 완성했습니다. 확인하고 복사하세요.';
+      : steps[active].prompts[activePrompt].repeatSection || steps[active].prompts[activePrompt].kind === 'research-plan'
+        ? '프롬프트를 완성했습니다. 복사해 2단계의 같은 AI 채팅에 붙여 넣으세요.'
+        : '공통 지침을 포함한 프롬프트를 완성했습니다. 확인하고 복사하세요.';
     draft.messageError = false;
     updateResult();
     $('prompt-text').scrollTop = 0;

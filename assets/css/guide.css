@@ -101,3 +101,13 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
 .preparation-panel ul{padding:0 18px 0 32px;margin:0 0 12px;line-height:1.8;word-break:keep-all}
 .preparation-panel li+li{margin-top:7px}
 .preparation-panel p{padding:0 15px 14px;margin:0;font-size:11px;line-height:1.7;color:#65776e}
+
+/* 직접 조사한 자료를 원문 정보와 해석별로 묶어 입력합니다. */
+.research-record{min-width:0;margin:0;padding:15px;border:1px solid #c7d8ce;border-radius:7px;background:#eef4ef;display:grid;gap:18px}
+.research-record legend{padding:0 7px;font-size:13px;font-weight:750;color:#285b49}
+.record-remove{justify-self:end;border:1px solid #bbcfc3;border-radius:4px;background:#fff;padding:7px 10px;color:#596d62;font-size:11px}
+.record-remove:hover:not(:disabled){border-color:#a66755;color:#94422d;background:#fff8f4}
+.record-add{width:100%;margin-top:18px;border:1px dashed #6d9d88;border-radius:5px;background:#e7f1e9;padding:13px;color:#285b49;font-size:13px;font-weight:700}
+.record-add:hover{background:#dcece0}
+.field-section-title{margin:0;font-size:13px;font-weight:750;color:#285b49;border-bottom:1px solid #d2dfd7;padding-bottom:10px}
+@media(max-width:700px){.research-record{padding:12px;gap:17px}}

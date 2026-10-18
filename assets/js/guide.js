@@ -248,9 +248,10 @@
     if (instructor && active > 0) {
       const sample = instructor.prompts[prompt.id];
       const decision = steps[active].prompts.find(item => item.kind === 'decision');
-      // Planning and brainstorming examples precede the user's final selection.
-      const decisionResult = !['research-plan', 'idea-brainstorm', 'decision'].includes(prompt.kind) ? instructor.prompts[decision.id]?.result : '';
-      $('example-title').textContent = active === 6 ? '완성 정책보고서 · 최종 점검' : `${steps[active].number} · ${prompt.title} 작성 결과`;
+      // Early-process examples precede the user's selection or outline confirmation.
+      const decisionResult = !['research-plan', 'idea-brainstorm', 'report-outline', 'decision'].includes(prompt.kind) ? instructor.prompts[decision.id]?.result : '';
+      $('example-title').textContent = prompt.kind === 'report-outline' ? '개요 초안 · 확정 전 검토'
+        : prompt.kind === 'report-body' ? '본문 초안 · 최종 점검' : `${steps[active].number} · ${prompt.title} 작성 결과`;
       $('example-text').textContent = `${instructor.notice}\n\n${sample?.result || ''}${decisionResult ? '\n\n━━━━━━━━━━━━━━━━━━━━\n내 결정 반영 결과\n\n' + decisionResult : ''}`;
     }
     $('review-guide').hidden = active === 0 || activeView === 'decision';
@@ -308,13 +309,17 @@
     $('prompt-text').scrollTop = 0;
     $('output-title').focus();
   });
-  function openStep(index, updateUrl = false) {
+  function openStep(index, updateUrl = false, initialProcess = null) {
     rememberScroll();
     initialized = false;
     active = index;
     activeInputPrompt = 0;
     activePrompt = 0;
     const step = steps[index];
+    if (initialProcess && instructor) {
+      const processIndex = step.prompts.findIndex(prompt => prompt.kind === initialProcess);
+      if (processIndex >= 0) activeInputPrompt = activePrompt = processIndex;
+    }
     $('dialog-kicker').textContent = index === 0 ? '공통 지침 · 모든 단계에 자동 포함' : `STEP ${step.number} / ${totalSteps}`;
     $('dialog-title').textContent = step.title;
     $('dialog-description').textContent = step.subtitle;
@@ -325,7 +330,7 @@
     $('step-count').textContent = index === 0 ? `START / ${totalSteps}` : `${step.number} / ${totalSteps}`;
     $('view-tabs').replaceChildren();
     const views = [['guide', '작성 요령'], ['input', '입력·프롬프트'], ['decision', '내 결정 기록']];
-    if (instructor) views.push(['example', index === 6 ? '완성 보고서' : '완성 예시']);
+    if (instructor) views.push(['example', '완성 예시']);
     if (index > 0) views.forEach(([view, title], i) => {
       const tab = create('button', '', title);
       tab.id = `view-${view}-tab`; tab.type = 'button';
@@ -353,7 +358,7 @@
       $('prompt-tabs').append(tab);
     });
     if (!modal.open) modal.showModal();
-    showView(index === 0 ? 'input' : instructor ? (index === 6 ? 'example' : 'input') : 'guide');
+    showView(index === 0 ? 'input' : instructor ? (initialProcess === 'report-body' ? 'example' : 'input') : 'guide');
     syncScrollLock();
     $('dialog-scroll').scrollTop = 0;
     $('dialog-title').focus({preventScroll:true});
@@ -427,7 +432,10 @@
   });
   function handleHash() {
     const index = steps.findIndex(step => `#${step.id}` === location.hash);
-    if (index >= 0) openStep(index);
+    if (index >= 0) {
+      const initialProcess = instructor && index === 6 && new URLSearchParams(location.search).get('process') === 'body' ? 'report-body' : null;
+      openStep(index, false, initialProcess);
+    }
     else if (modal.open) modal.close();
   }
   window.addEventListener('popstate', handleHash);

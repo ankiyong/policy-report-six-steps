@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123e3d">
+  <meta name="robots" content="noindex">
+  <title>강사용 입장 | AI와 함께 쓰는 정책보고서</title>
+  <link rel="stylesheet" href="assets/css/instructor-login.css">
+  <script src="assets/js/instructor-access.js"></script>
+  <script src="assets/js/instructor-login.js" defer></script>
+</head>
+<body>
+  <header class="login-header"><a class="login-brand" href="index.html">POLICY REPORT <span>AI WORKSHOP</span></a><a class="back-link" href="index.html">입장 선택 <span aria-hidden="true">↗</span></a></header>
+  <main class="login-main">
+    <section class="login-story" aria-label="강사용 안내">
+      <p class="eyebrow">FOR INSTRUCTORS</p>
+      <h1>생각은 내가.<br>정리는 AI와.</h1>
+      <p class="story-description">강의 슬라이드와 완성 예시로<br>정책보고서 실습을 이어가세요.</p>
+      <img src="images/steps/step-6.webp" alt="정책보고서 작성을 상징하는 문서 이미지" width="1200" height="800">
+      <p class="story-caption">강의 슬라이드 · 단계별 실습 예시 · Claude 양식 작성</p>
+    </section>
+    <section class="login-panel" aria-labelledby="login-heading">
+      <div class="login-copy"><p class="eyebrow">강사 전용 입장</p><h2 id="login-heading">강사용 페이지 입장</h2><p>안내받은 비밀번호를 입력해 주세요.<br>수강생 실습은 비밀번호 없이 이용할 수 있습니다.</p></div>
+      <form id="instructor-login-form" class="login-form" aria-busy="false">
+        <label for="instructor-password">비밀번호</label>
+        <div class="password-field"><input id="instructor-password" type="password" autocomplete="current-password" required aria-describedby="login-error login-session-note" autofocus><button id="password-toggle" type="button" aria-pressed="false" aria-label="비밀번호 표시 전환">보기</button></div>
+        <p id="login-error" class="login-error" role="alert" aria-live="polite"></p>
+        <button id="instructor-login-submit" class="login-submit" type="submit">강사용 페이지 입장</button>
+        <p id="login-session-note" class="session-note">이 탭에서 입장이 유지됩니다. 사용을 마치면 강사용 페이지의 ‘강사용 종료’를 눌러 주세요.</p>
+      </form>
+      <noscript><p class="login-error">강사용 입장에는 JavaScript가 필요합니다. 브라우저 설정에서 JavaScript를 켜 주세요.</p></noscript>
+      <a class="student-link" href="practice.html">수강생용 실습으로 이동 <span aria-hidden="true">→</span></a>
+    </section>
+  </main>
+  <footer class="login-footer">내 생각에서 출발해, 실행할 수 있는 보고서로.</footer>
+</body>
+</html>

@@ -1,18 +1,21 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" class="instructor-locked">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>.instructor-locked body > :not(.access-noscript){display:none!important}</style>
+  <script src="assets/js/instructor-access.js"></script>
   <meta name="description" content="정책보고서 작성 실습을 위한 PDF 강의 슬라이드와 AI 활용 인수인계 개선 실습 예시">
   <title>강사 강의실 | AI와 함께 쓰는 정책보고서</title>
   <link rel="stylesheet" href="assets/css/lecture.css">
   <script src="assets/js/lecture.js" defer></script>
 </head>
 <body>
+  <noscript class="access-noscript"><p>강사용 입장은 JavaScript가 필요합니다. <a href="practice.html">수강생 실습</a> 또는 <a href="index.html">입장 선택</a>으로 이동하세요.</p></noscript>
   <a class="skip-link" href="#lecture">강의 슬라이드로 바로가기</a>
   <header class="site-header">
     <a class="site-brand" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>AI와 함께 쓰는<br><strong>정책보고서</strong></span></a>
-    <nav aria-label="페이지 이동"><a href="index.html">입장 선택</a><a href="practice.html">수강생 실습 <span aria-hidden="true">↗</span></a></nav>
+    <nav aria-label="페이지 이동"><a href="index.html">입장 선택</a><a href="practice.html">수강생 실습 <span aria-hidden="true">↗</span></a><button id="instructor-logout" type="button" class="control-button">강사용 종료</button></nav>
   </header>
 
   <main class="lecture-main">

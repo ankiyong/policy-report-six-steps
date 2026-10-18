@@ -85,15 +85,13 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
   .prompt-panel{flex:1 0 380px;min-height:380px}
 }
 
-/* 수강생은 공통 카드와 6단계, 강사는 공통 카드와 7단계를 표시합니다. */
+/* 두 역할 모두 공통 카드와 7단계이며, 마지막 단계의 내용은 역할에 맞게 표시합니다. */
 @media(min-width:1100px){
   .gallery{grid-template-columns:repeat(12,minmax(0,1fr))}
   .gallery .thumb{grid-column:span 3;height:clamp(290px,24vw,390px)}
-  .gallery .thumb:nth-child(n+5){grid-column:span 4}
-  .is-instructor .gallery .thumb:nth-child(n+5){grid-column:span 3}
+  .gallery .thumb:nth-child(n+5){grid-column:span 3}
 }
 @media(min-width:441px) and (max-width:1099px){
-  body:not(.is-instructor) .gallery .thumb:first-child{grid-column:span 2;height:240px}
   .gallery .thumb:first-child .card-image{object-position:center 44%}
 }
 .preparation-panel{border:1px solid #d2dfd8;border-radius:5px;background:#edf3ed;margin-bottom:20px;font-size:12px;color:#425e53}
@@ -230,3 +228,39 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
 
 /* 긴 단계 이름은 작은 카드와 대화상자에서도 줄바꿈합니다. */
 .card-title-row h2,.dialog-heading h2{overflow-wrap:anywhere}
+
+/* Claude 스킬 직접 입력 안내 */
+.setup-panel{display:flex;flex:1;min-height:0;min-width:0;flex-direction:column;border:1px solid var(--line);border-radius:7px;background:#fff;overflow:hidden;color:#31483f}
+.setup-panel[hidden]{display:none}
+.setup-scroll{overflow:auto;min-height:0;padding:28px 30px;scrollbar-width:thin}
+.setup-heading{padding:0 0 22px;border-bottom:1px solid var(--line)}
+.setup-heading h3{font-size:22px;margin:0 0 10px;letter-spacing:-.5px;color:#204d45}
+.setup-heading p:last-child{font-size:13px;line-height:1.8;margin:0;color:#60756c}
+.setup-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;margin:26px 0}
+.setup-steps{list-style:none;margin:0;padding:0;display:grid;gap:23px}
+.setup-steps li{display:flex;align-items:flex-start;gap:15px}
+.setup-number{display:flex;align-items:center;justify-content:center;flex:0 0 36px;height:36px;background:#e8f1eb;border-radius:50%;font-size:13px;font-weight:750;color:#286454}
+.setup-steps h4,.setup-materials h4,.setup-check h4{font-size:15px;margin:2px 0 8px;color:#285b49;line-height:1.6}
+.setup-steps p{font-size:12px;line-height:1.9;margin:0;word-break:keep-all}
+.setup-materials{min-width:0;background:#f3f7f3;border:1px solid #d6e2d9;border-radius:7px;padding:22px}
+.setup-field{padding:14px 0;border-bottom:1px solid #dbe5de}
+.setup-field>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.setup-field strong,.setup-body-actions strong{font-size:12px;color:#315c4e}
+.setup-field p{font-size:13px;line-height:1.8;margin:9px 0 0;overflow-wrap:anywhere}
+#skill-name{font-weight:750;font-size:18px;letter-spacing:.3px}
+.setup-copy-small{background:white;border:1px solid #bdcfc4;padding:6px 11px;border-radius:4px;font-size:11px;color:#285b49;white-space:nowrap}
+.setup-body-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.setup-body-actions p{font-size:11px;margin:7px 0 0;line-height:1.7;color:#63786c}
+.setup-body-actions .copy-button{margin-left:0;align-self:auto}
+.setup-original{font-size:12px;line-height:1.8;border-top:1px solid #dbe5de;padding-top:12px}
+.setup-original summary{cursor:pointer;font-weight:650;color:#315c4e}
+#skill-instructions{max-height:380px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:11px;line-height:1.8;padding:16px;background:#fff;border:1px solid #dbe5de;border-radius:4px}
+.setup-download{display:inline-block;margin-top:15px;font-size:11px;font-weight:650;color:#286454;text-decoration:underline;text-underline-offset:3px}
+.setup-note{padding:15px 18px;background:#faf7ee;border:1px solid #e8dfc9;border-radius:5px;color:#706044;font-size:11px;line-height:1.9;margin:0 0 22px}
+.setup-check{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px}
+.setup-check p{font-size:12px;line-height:1.7;color:#63786c;margin:0}
+.setup-check pre{flex:1 0 100%;font-family:inherit;white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f7f4;border:1px solid #dbe5de;border-radius:5px;padding:18px;font-size:12px;line-height:1.85;margin:0}
+.setup-sources{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:22px;font-size:11px;color:#627c70}
+.setup-sources a{text-decoration:underline;text-underline-offset:3px}
+.setup-status{flex-shrink:0;min-height:35px;padding:9px 24px;border-top:1px solid var(--line);margin:0;background:#f4f7f3;font-size:12px}
+@media(max-width:899px){.setup-panel{min-height:440px;max-height:80dvh}.setup-scroll{padding:20px}.setup-grid{grid-template-columns:1fr;gap:25px}.setup-heading h3{font-size:20px}.setup-materials{padding:18px}}

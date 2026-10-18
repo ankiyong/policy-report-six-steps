@@ -248,8 +248,8 @@
     if (instructor && active > 0) {
       const sample = instructor.prompts[prompt.id];
       const decision = steps[active].prompts.find(item => item.kind === 'decision');
-      // The investigation plan precedes the completed analysis and final adoption decision.
-      const decisionResult = prompt.kind !== 'research-plan' && prompt.kind !== 'decision' ? instructor.prompts[decision.id]?.result : '';
+      // Planning and brainstorming examples precede the user's final selection.
+      const decisionResult = !['research-plan', 'idea-brainstorm', 'decision'].includes(prompt.kind) ? instructor.prompts[decision.id]?.result : '';
       $('example-title').textContent = active === 6 ? '완성 정책보고서 · 최종 점검' : `${steps[active].number} · ${prompt.title} 작성 결과`;
       $('example-text').textContent = `${instructor.notice}\n\n${sample?.result || ''}${decisionResult ? '\n\n━━━━━━━━━━━━━━━━━━━━\n내 결정 반영 결과\n\n' + decisionResult : ''}`;
     }
@@ -300,7 +300,7 @@
     draft.hasGenerated = true;
     draft.message = steps[active].prompts[activePrompt].kind === 'decision'
       ? '내 결정문을 완성했습니다. 진행 중인 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
-      : steps[active].prompts[activePrompt].repeatSection || steps[active].prompts[activePrompt].kind === 'research-plan'
+      : steps[active].prompts[activePrompt].includesCommon
         ? '프롬프트를 완성했습니다. 복사해 진행 중인 AI 채팅에 이어서 붙여 넣으세요.'
         : '공통 지침을 포함한 프롬프트를 완성했습니다. 확인하고 복사하세요.';
     draft.messageError = false;
@@ -343,6 +343,7 @@
       $('view-tabs').append(tab);
     });
     $('prompt-tabs').replaceChildren();
+    $('prompt-tabs').setAttribute('aria-label', `${step.title.replace(/ 채팅$/, '')} 과정`);
     const processes = step.prompts.filter(prompt => prompt.kind !== 'decision');
     if (processes.length > 1) processes.forEach((prompt, i) => {
       const tab = create('button', '', prompt.title);

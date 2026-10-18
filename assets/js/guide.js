@@ -18,7 +18,7 @@
     $('instructor-banner').hidden = false;
     $('instructor-notice').textContent = `${instructor.topic} · ${instructor.notice} 입력·결정은 수정할 수 있으며 새로고침하면 원래 예시로 돌아갑니다.`;
   }
-  const imagePath = index => `images/steps/${steps[index].id}.webp`;
+  const imagePath = index => steps[index].image || `images/steps/${steps[index].id}.webp`;
   const create = (tag, className, value) => {
     const el = document.createElement(tag);
     if (className) el.className = className;
@@ -37,7 +37,7 @@
     const top = create('div', 'card-top');
     top.append(create('span', 'card-step', index === 0 ? 'START · 00' : `STEP ${step.number}`));
     if (index === 0) top.append(create('span', 'prompt-count', '먼저 읽기'));
-    else if (step.prompts.length > 1) top.append(create('span', 'prompt-count', step.badge || '단계 · 내 결정'));
+    else if (step.badge || step.prompts.length > 1) top.append(create('span', 'prompt-count', step.badge || '단계 · 내 결정'));
     const content = create('div', 'card-content');
     const row = create('div', 'card-title-row');
     const arrow = create('span', 'card-arrow', '↗'); arrow.setAttribute('aria-hidden', 'true');
@@ -219,7 +219,7 @@
       return item;
     }));
     const caseValues = instructor?.prompts[prompt.id]?.values;
-    const examples = caseValues ? Object.entries(caseValues).slice(0, 3).map(([label, text]) => ({title: label, items: [{label: '인수인계 사례', text: text.length > 280 ? text.slice(0, 280) + '… (전체 내용은 입력·프롬프트에서 확인)' : text}]})) : guide.examples;
+    const examples = caseValues && Object.keys(caseValues).length ? Object.entries(caseValues).slice(0, 3).map(([label, text]) => ({title: label, items: [{label: '인수인계 사례', text: text.length > 280 ? text.slice(0, 280) + '… (전체 내용은 입력·프롬프트에서 확인)' : text}]})) : guide.examples;
     $('guide-examples').replaceChildren(...examples.map(example => {
       const section = create('section', 'guide-example');
       section.append(create('h4', '', example.title));
@@ -234,8 +234,12 @@
   function showView(view, focusTab = false) {
     rememberScroll();
     activeView = active === 0 ? 'input' : view === 'example' && !instructor ? 'guide' : view;
-    activePrompt = activeView === 'decision' ? steps[active].prompts.findIndex(prompt => prompt.kind === 'decision') : activeInputPrompt;
+    const decisionIndex = steps[active].prompts.findIndex(prompt => prompt.kind === 'decision');
+    if (activeView === 'decision' && decisionIndex < 0) activeView = 'input';
+    activePrompt = activeView === 'decision' ? decisionIndex : activeInputPrompt;
     const prompt = steps[active].prompts[activePrompt];
+    const isWorkflow = prompt.kind === 'document-workflow';
+    $('start-writing').innerHTML = isWorkflow ? '프롬프트 확인하기 <span aria-hidden="true">→</span>' : '이해했어요, 입력 시작하기 <span aria-hidden="true">→</span>';
     $('prompt-title').textContent = prompt.title;
     renderFields();
     updateResult();
@@ -249,9 +253,11 @@
       const sample = instructor.prompts[prompt.id];
       const decision = steps[active].prompts.find(item => item.kind === 'decision');
       // Early-process examples precede the user's selection or outline confirmation.
-      const decisionResult = !['research-plan', 'idea-brainstorm', 'report-outline', 'decision'].includes(prompt.kind) ? instructor.prompts[decision.id]?.result : '';
-      $('example-title').textContent = prompt.kind === 'report-outline' ? '개요 초안 · 확정 전 검토'
+      const decisionResult = decision && !['research-plan', 'idea-brainstorm', 'report-outline', 'decision'].includes(prompt.kind) ? instructor.prompts[decision.id]?.result : '';
+      $('example-title').textContent = isWorkflow ? '문서 생성·검증·저장 진행 예시' : prompt.kind === 'report-outline' ? '개요 초안 · 확정 전 검토'
         : prompt.kind === 'report-body' ? '본문 초안 · 최종 점검' : `${steps[active].number} · ${prompt.title} 작성 결과`;
+      $('example-hint').textContent = isWorkflow ? '단계별 요청과 확인할 결과를 보여주는 교육용 예시입니다. 실제 문서 생성·검증·저장은 AI 채팅에서 진행합니다.' : '미리 준비한 교육용 예시입니다. 입력을 수정해도 이 결과는 바뀌지 않습니다.';
+      $('copy-example').textContent = isWorkflow ? '진행 예시 복사' : '작성 결과 복사';
       $('example-text').textContent = `${instructor.notice}\n\n${sample?.result || ''}${decisionResult ? '\n\n━━━━━━━━━━━━━━━━━━━━\n내 결정 반영 결과\n\n' + decisionResult : ''}`;
     }
     $('review-guide').hidden = active === 0 || activeView === 'decision';
@@ -329,8 +335,10 @@
     $('next-step').disabled = index === steps.length - 1;
     $('step-count').textContent = index === 0 ? `START / ${totalSteps}` : `${step.number} / ${totalSteps}`;
     $('view-tabs').replaceChildren();
-    const views = [['guide', '작성 요령'], ['input', '입력·프롬프트'], ['decision', '내 결정 기록']];
-    if (instructor) views.push(['example', '완성 예시']);
+    const isWorkflow = step.prompts[0].kind === 'document-workflow';
+    const views = [['guide', '작성 요령'], ['input', isWorkflow ? '프롬프트' : '입력·프롬프트']];
+    if (step.prompts.some(prompt => prompt.kind === 'decision')) views.push(['decision', '내 결정 기록']);
+    if (instructor) views.push(['example', isWorkflow ? '진행 예시' : '완성 예시']);
     if (index > 0) views.forEach(([view, title], i) => {
       const tab = create('button', '', title);
       tab.id = `view-${view}-tab`; tab.type = 'button';

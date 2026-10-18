@@ -12,6 +12,12 @@
   const guideScrolls = new Map();
   const writingGuides = window.WRITING_GUIDES;
   const builder = window.PromptBuilder;
+  const instructor = new URLSearchParams(location.search).get('mode') === 'instructor' ? window.INSTRUCTOR_CASE : null;
+  const exampleScrolls = new Map();
+  if (instructor) {
+    $('instructor-banner').hidden = false;
+    $('instructor-notice').textContent = `${instructor.topic} · ${instructor.notice} 입력·결정은 수정할 수 있으며 새로고침하면 원래 예시로 돌아갑니다.`;
+  }
   const imagePath = index => `images/steps/${steps[index].id}.webp`;
   const create = (tag, className, value) => {
     const el = document.createElement(tag);
@@ -45,8 +51,12 @@
     const prompt = steps[active].prompts[activePrompt];
     const key = `${steps[active].id}:${prompt.id}`;
     if (!drafts.has(key)) {
-      const fields = builder.getFields(prompt.text);
-      drafts.set(key, { template: prompt.text, recordCount: 1, fields, values: fields.map(() => ''), result: null, hasGenerated: false, invalid: new Set(), message: '', messageError: false });
+      const example = instructor?.prompts[prompt.id];
+      const recordCount = example?.records?.length || 1;
+      const template = prompt.repeatSection ? builder.expandRepeatSection(prompt.text, recordCount, prompt.repeatSection) : prompt.text;
+      const fields = builder.getFields(template);
+      const values = fields.map(field => example ? (prompt.repeatSection && field.section === prompt.repeatSection ? example.records?.[field.recordIndex]?.[field.label] : example.values[field.label]) || '' : '');
+      drafts.set(key, { template, recordCount, fields, values, result: example ? builder.build(template, values) : null, hasGenerated: !!example, invalid: new Set(), message: example ? '교육용 입력 예시가 채워져 있습니다. 그대로 복사하거나 수정 후 다시 생성하세요.' : '', messageError: false });
     }
     return drafts.get(key);
   }
@@ -187,6 +197,8 @@
     const prompt = steps[active].prompts[activePrompt];
     if (activeView === 'guide') {
       guideScrolls.set(prompt.id, { guide: $('guide-scroll').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
+    } else if (activeView === 'example') {
+      exampleScrolls.set(prompt.id, { text: $('example-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
     } else {
       currentDraft().scroll = { input: $('input-scroll').scrollTop || 0, output: $('prompt-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 };
     }
@@ -206,7 +218,9 @@
       item.append(number, content);
       return item;
     }));
-    $('guide-examples').replaceChildren(...guide.examples.map(example => {
+    const caseValues = instructor?.prompts[prompt.id]?.values;
+    const examples = caseValues ? Object.entries(caseValues).slice(0, 3).map(([label, text]) => ({title: label, items: [{label: '인수인계 사례', text: text.length > 280 ? text.slice(0, 280) + '… (전체 내용은 입력·프롬프트에서 확인)' : text}]})) : guide.examples;
+    $('guide-examples').replaceChildren(...examples.map(example => {
       const section = create('section', 'guide-example');
       section.append(create('h4', '', example.title));
       const list = create('dl');
@@ -219,7 +233,7 @@
   }
   function showView(view, focusTab = false) {
     rememberScroll();
-    activeView = active === 0 ? 'input' : view;
+    activeView = active === 0 ? 'input' : view === 'example' && !instructor ? 'guide' : view;
     activePrompt = activeView === 'decision' ? steps[active].prompts.findIndex(prompt => prompt.kind === 'decision') : activeInputPrompt;
     const prompt = steps[active].prompts[activePrompt];
     $('prompt-title').textContent = prompt.title;
@@ -227,7 +241,18 @@
     updateResult();
     renderGuide();
     $('guide-panel').hidden = activeView !== 'guide';
-    $('prompt-panel').hidden = activeView === 'guide';
+    $('prompt-panel').hidden = activeView === 'guide' || activeView === 'example';
+    $('example-panel').hidden = activeView !== 'example';
+    $('example-status').textContent = '';
+    $('copy-example').disabled = false;
+    if (instructor && active > 0) {
+      const sample = instructor.prompts[prompt.id];
+      const decision = steps[active].prompts.find(item => item.kind === 'decision');
+      // The investigation plan precedes the completed analysis and final adoption decision.
+      const decisionResult = prompt.kind !== 'research-plan' && prompt.kind !== 'decision' ? instructor.prompts[decision.id]?.result : '';
+      $('example-title').textContent = active === 6 ? '완성 정책보고서 · 최종 점검' : `${steps[active].number} · ${prompt.title} 작성 결과`;
+      $('example-text').textContent = `${instructor.notice}\n\n${sample?.result || ''}${decisionResult ? '\n\n━━━━━━━━━━━━━━━━━━━━\n내 결정 반영 결과\n\n' + decisionResult : ''}`;
+    }
     $('review-guide').hidden = active === 0 || activeView === 'decision';
     $('view-tabs').hidden = active === 0;
     $('prompt-tabs').hidden = activeView === 'decision' || $('prompt-tabs').children.length < 2;
@@ -240,10 +265,12 @@
     $('prompt-panel').setAttribute('aria-labelledby', active === 0 ? 'prompt-title' : `view-${activeView === 'decision' ? 'decision' : 'input'}-tab`);
     const scroll = currentDraft().scroll || {};
     const guideScroll = guideScrolls.get(prompt.id) || {};
+    const exampleScroll = exampleScrolls.get(prompt.id) || {};
     $('input-scroll').scrollTop = scroll.input || 0;
     $('prompt-text').scrollTop = scroll.output || 0;
     $('guide-scroll').scrollTop = guideScroll.guide || 0;
-    $('dialog-scroll').scrollTop = (activeView === 'guide' ? guideScroll.outer : scroll.outer) || 0;
+    $('example-text').scrollTop = exampleScroll.text || 0;
+    $('dialog-scroll').scrollTop = (activeView === 'guide' ? guideScroll.outer : activeView === 'example' ? exampleScroll.outer : scroll.outer) || 0;
     initialized = true;
     if (focusTab) $(`view-${activeView}-tab`).focus({preventScroll:true});
   }
@@ -298,11 +325,12 @@
     $('step-count').textContent = index === 0 ? `START / ${totalSteps}` : `${step.number} / ${totalSteps}`;
     $('view-tabs').replaceChildren();
     const views = [['guide', '작성 요령'], ['input', '입력·프롬프트'], ['decision', '내 결정 기록']];
+    if (instructor) views.push(['example', index === 6 ? '완성 보고서' : '완성 예시']);
     if (index > 0) views.forEach(([view, title], i) => {
       const tab = create('button', '', title);
       tab.id = `view-${view}-tab`; tab.type = 'button';
       tab.setAttribute('role', 'tab');
-      tab.setAttribute('aria-controls', view === 'guide' ? 'guide-panel' : 'prompt-panel');
+      tab.setAttribute('aria-controls', view === 'guide' ? 'guide-panel' : view === 'example' ? 'example-panel' : 'prompt-panel');
       tab.addEventListener('click', () => showView(view));
       tab.addEventListener('keydown', event => {
         let target;
@@ -319,12 +347,12 @@
     if (processes.length > 1) processes.forEach((prompt, i) => {
       const tab = create('button', '', prompt.title);
       tab.type = 'button';tab.id = `tab-${step.id}-${i}`;
-      tab.setAttribute('aria-controls', 'guide-panel prompt-panel');
+      tab.setAttribute('aria-controls', instructor ? 'guide-panel prompt-panel example-panel' : 'guide-panel prompt-panel');
       tab.addEventListener('click', () => { activeInputPrompt = i; showView(activeView); });
       $('prompt-tabs').append(tab);
     });
     if (!modal.open) modal.showModal();
-    showView(index === 0 ? 'input' : 'guide');
+    showView(index === 0 ? 'input' : instructor ? (index === 6 ? 'example' : 'input') : 'guide');
     syncScrollLock();
     $('dialog-scroll').scrollTop = 0;
     $('dialog-title').focus({preventScroll:true});
@@ -344,14 +372,32 @@
   }));
   $('prev-step').addEventListener('click', () => {if(active > 0) openStep(active - 1, true);});
   $('next-step').addEventListener('click', () => {if(active < steps.length - 1) openStep(active + 1, true);});
-  function fallbackCopy(text) {
+  function fallbackCopy(text, buttonId = 'copy-prompt') {
     const field = create('textarea');field.value = text;field.readOnly = true;
     field.style.cssText = 'position:fixed;top:0;left:0;opacity:0;width:1px;height:1px;';
     modal.append(field);field.focus();field.select();field.setSelectionRange(0, text.length);
     let success = false;
     try {success = document.execCommand('copy');} catch (_) { /* Manual selection below. */ }
-    field.remove();$('copy-prompt').focus({preventScroll:true});return success;
+    field.remove();$(buttonId).focus({preventScroll:true});return success;
   }
+  $('copy-example').addEventListener('click', async () => {
+    if (!instructor || activeView !== 'example') return;
+    const text = $('example-text').textContent;
+    const revision = viewRevision;
+    $('copy-example').disabled = true;
+    let success = false;
+    if (window.isSecureContext && navigator.clipboard) {
+      try { await navigator.clipboard.writeText(text); success = true; } catch (_) { /* Fallback below. */ }
+    }
+    if (revision !== viewRevision || !modal.open) return;
+    $('copy-example').disabled = false;
+    if (!success) success = fallbackCopy(text, 'copy-example');
+    $('example-status').textContent = success ? '작성 결과를 복사했습니다. 교육용 예시임을 함께 표시해 사용하세요.' : '자동 복사가 제한되어 내용을 선택했습니다. Ctrl+C 또는 ⌘C로 복사하세요.';
+    if (!success) {
+      const range = document.createRange(); range.selectNodeContents($('example-text'));
+      const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+    }
+  });
   $('copy-prompt').addEventListener('click', async () => {
     const draft = currentDraft();
     if (draft.fields.length && draft.result === null) return;

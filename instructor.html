@@ -7,8 +7,8 @@
   <script src="assets/js/instructor-access.js"></script>
   <meta name="description" content="정책보고서 작성 실습을 위한 PDF 강의 슬라이드와 AI 활용 인수인계 개선 실습 예시">
   <title>강사 강의실 | AI와 함께 쓰는 정책보고서</title>
-  <link rel="stylesheet" href="assets/css/lecture.css">
-  <script src="assets/js/lecture.js" defer></script>
+  <link rel="stylesheet" href="assets/css/lecture.css?v=20261018-pointer">
+  <script src="assets/js/lecture.js?v=20261018-pointer" defer></script>
 </head>
 <body>
   <noscript class="access-noscript"><p>강사용 입장은 JavaScript가 필요합니다. <a href="practice.html">수강생 실습</a> 또는 <a href="index.html">입장 선택</a>으로 이동하세요.</p></noscript>
@@ -28,7 +28,7 @@
       <div class="section-heading"><div><p class="eyebrow">01 · MINI LECTURE</p><h2 id="lecture-heading">강의 슬라이드</h2></div><div class="resource-links"><a href="lecture.pdf" target="_blank" rel="noopener">PDF 원본 보기 <span aria-hidden="true">↗</span></a><a href="lecture.pdf" download="정책보고서_작성_강의안.pdf">PDF 다운로드 <span aria-hidden="true">↓</span></a></div></div>
       <div id="slide-player" class="slide-player" role="region" aria-label="강의 슬라이드쇼">
         <div class="slide-topline"><span class="slide-label">LECTURE SLIDE</span><h3 id="slide-title">보고서와 기획</h3><span id="slide-count" aria-live="polite" aria-atomic="true">01 / 10</span></div>
-        <div id="slide-stage" class="slide-stage" tabindex="0" aria-label="슬라이드 화면. 방향키로 이전 또는 다음 슬라이드로 이동합니다.">
+        <div id="slide-stage" class="slide-stage" tabindex="0" aria-label="슬라이드 화면. 클릭·터치 또는 Space·Enter로 다음 장, 방향키와 Page Up·Down으로 이전·다음 장을 표시합니다.">
           <img id="slide-image" src="images/lecture-01.webp" alt="1쪽. PART 1. 보고서와 기획" width="1920" height="1080" fetchpriority="high" draggable="false">
           <p id="slide-error" class="slide-error" hidden>슬라이드 이미지를 불러오지 못했습니다. <a href="lecture.pdf" target="_blank" rel="noopener">PDF 원본을 열어주세요.</a></p>
         </div>
@@ -36,7 +36,7 @@
           <div class="slide-navigation"><button id="slide-prev" type="button" class="control-button" disabled aria-label="이전 슬라이드"><span aria-hidden="true">←</span> 이전</button><button id="slide-next" type="button" class="control-button" aria-label="다음 슬라이드">다음 <span aria-hidden="true">→</span></button></div>
           <div class="playback-controls"><label for="slide-interval" class="visually-hidden">자동 재생 간격</label><select id="slide-interval" aria-label="자동 재생 간격"><option value="15">15초마다</option><option value="30" selected>30초마다</option><option value="60">60초마다</option></select><button id="slide-autoplay" type="button" class="control-button" aria-pressed="false">자동 재생</button><button id="slide-fullscreen" type="button" class="control-button" aria-pressed="false"><span aria-hidden="true">⛶</span> 전체 화면</button></div>
         </div>
-        <p id="player-status" class="player-status" role="status" aria-live="polite">슬라이드 화면에서 ← → 방향키로 이동 · Home 처음 · End 마지막</p>
+        <p id="player-status" class="player-status" role="status" aria-live="polite">화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막</p>
       </div>
       <details class="slide-overview"><summary>전체 슬라이드 보기 <span>10장</span></summary><div id="slide-thumbnails" class="slide-thumbnails" role="group" aria-label="슬라이드 선택"></div></details>
       <p class="lecture-note">강의안의 ‘최종 점검’은 실습 6단계 ‘보고서 작성’에서 함께 진행합니다. 실습 7단계에서는 최신 초안과 빈 HWPX 양식을 Claude에 전달하고 hwpx-writer 스킬로 양식에 작성·검증한 파일을 다운로드합니다.</p>

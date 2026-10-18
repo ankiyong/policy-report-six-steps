@@ -100,7 +100,7 @@
     $('preparation-list').replaceChildren(...preparations.map(item => create('li', '', item)));
     $('add-record').hidden = !prompt.repeatSection;
     $('input-help').textContent = prompt.repeatSection
-      ? '자료마다 원문 정보와 내 해석을 입력하세요. 자료가 여러 개면 ‘자료 추가’를 누르세요. 해석을 비우면 ‘사용자 해석 미입력’으로 표시합니다. 나머지 미확인 항목은 ‘확인 필요’라고 적어주세요.'
+      ? '자료별로 출처와 내가 분석한 내용을 입력하세요. 원문은 AI 채팅에 직접 첨부하면 발행정보를 AI가 확인합니다. 자료가 여러 개면 ‘자료 추가’를 누르세요. 분석을 비우면 ‘사용자 분석 미입력’으로 표시합니다.'
       : '각 항목을 입력하세요. 아직 모르면 ‘확인 필요’, 해당하지 않으면 ‘해당 없음’을 적어주세요.';
     const recordContainers = new Map();
     let lastSection = '';
@@ -125,7 +125,7 @@
         container.append(create('h5', 'field-section-title', field.section));
       }
       lastSection = field.section;
-      const optionalInterpretation = isRecord && field.label === '내가 분석·해석한 내용';
+      const optionalAnalysis = isRecord && field.label === '내가 분석한 내용';
       const group = create('div', 'prompt-field');
       const inputId = `input-${steps[active].id}-${steps[active].prompts[activePrompt].id}-${field.id}`;
       const label = create('label', '', field.label);
@@ -134,15 +134,15 @@
       input.id = inputId;
       input.name = field.id;
       input.rows = 3;
-      input.required = !optionalInterpretation;
+      input.required = !optionalAnalysis;
       input.value = draft.values[index];
       input.placeholder = field.placeholder || '내용을 입력하거나 자료를 붙여 넣으세요.';
       const fieldHint = writingGuides[prompt.id]?.fieldHints[field.label];
-      const hint = create('p', 'field-hint', optionalInterpretation
-        ? '직접 해석한 내용이 없으면 비워두세요. 생성 시 ‘사용자 해석 미입력’으로 표시합니다.'
+      const hint = create('p', 'field-hint', optionalAnalysis
+        ? '직접 분석한 내용이 없으면 비워두세요. 생성 시 ‘사용자 분석 미입력’으로 표시합니다.'
         : field.isAttachment ? '양식 내용이나 파일명을 적어주세요. 실제 파일은 AI 대화에 직접 첨부해야 합니다.' : fieldHint || '');
       hint.id = `${inputId}-hint`;
-      hint.hidden = !field.isAttachment && !optionalInterpretation && !fieldHint;
+      hint.hidden = !field.isAttachment && !optionalAnalysis && !fieldHint;
       const error = create('p', 'field-error', '이 항목을 입력해주세요. 모르면 ‘확인 필요’라고 적을 수 있습니다.');
       error.id = `${inputId}-error`;
       error.hidden = !draft.invalid.has(index);
@@ -160,7 +160,7 @@
       });
       group.append(label, input, hint, error);
       container.append(group);
-      fieldControls.push({ input, error, optionalInterpretation });
+      fieldControls.push({ input, error, optionalAnalysis });
     });
   }
   function changeRecords(removeIndex) {
@@ -280,9 +280,9 @@
     event.preventDefault();
     const draft = currentDraft();
     draft.invalid.clear();
-    fieldControls.forEach(({ input, error, optionalInterpretation }, index) => {
+    fieldControls.forEach(({ input, error, optionalAnalysis }, index) => {
       draft.values[index] = input.value;
-      const missing = !optionalInterpretation && !input.value.trim();
+      const missing = !optionalAnalysis && !input.value.trim();
       if (missing) draft.invalid.add(index);
       input.setAttribute('aria-invalid', String(missing));
       error.hidden = !missing;
@@ -296,7 +296,7 @@
       return;
     }
     draft.result = builder.build(draft.template, draft.values.map((value, index) =>
-      fieldControls[index].optionalInterpretation && !value.trim() ? '사용자 해석 미입력' : value));
+      fieldControls[index].optionalAnalysis && !value.trim() ? '사용자 분석 미입력' : value));
     draft.hasGenerated = true;
     draft.message = steps[active].prompts[activePrompt].kind === 'decision'
       ? '내 결정문을 완성했습니다. 진행 중인 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'

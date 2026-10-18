@@ -254,9 +254,9 @@
       const decision = steps[active].prompts.find(item => item.kind === 'decision');
       // Early-process examples precede the user's selection or outline confirmation.
       const decisionResult = decision && !['research-plan', 'idea-brainstorm', 'report-outline', 'decision'].includes(prompt.kind) ? instructor.prompts[decision.id]?.result : '';
-      $('example-title').textContent = isWorkflow ? '문서 생성·검증·저장 진행 예시' : prompt.kind === 'report-outline' ? '개요 초안 · 확정 전 검토'
+      $('example-title').textContent = isWorkflow ? 'Claude 양식 작성 진행 예시' : prompt.kind === 'report-outline' ? '개요 초안 · 확정 전 검토'
         : prompt.kind === 'report-body' ? '본문 초안 · 최종 점검' : `${steps[active].number} · ${prompt.title} 작성 결과`;
-      $('example-hint').textContent = isWorkflow ? '단계별 요청과 확인할 결과를 보여주는 교육용 예시입니다. 실제 문서 생성·검증·저장은 AI 채팅에서 진행합니다.' : '미리 준비한 교육용 예시입니다. 입력을 수정해도 이 결과는 바뀌지 않습니다.';
+      $('example-hint').textContent = isWorkflow ? '최신 초안과 빈 HWPX 양식을 Claude에 첨부하는 교육용 진행 예시입니다. 실제 문서 작성·검증·다운로드는 hwpx-writer 스킬을 사용할 수 있는 Claude에서 진행합니다.' : '미리 준비한 교육용 예시입니다. 입력을 수정해도 이 결과는 바뀌지 않습니다.';
       $('copy-example').textContent = isWorkflow ? '진행 예시 복사' : '작성 결과 복사';
       $('example-text').textContent = `${instructor.notice}\n\n${sample?.result || ''}${decisionResult ? '\n\n━━━━━━━━━━━━━━━━━━━━\n내 결정 반영 결과\n\n' + decisionResult : ''}`;
     }
@@ -428,7 +428,9 @@
     if (!success) success = fallbackCopy(text);
     if (success) {
       $('copy-prompt').textContent = '✓ 복사 완료';$('copy-prompt').classList.add('copied');
-      $('copy-status').textContent = steps[active].prompts[activePrompt].kind === 'decision'
+      $('copy-status').textContent = steps[active].prompts[activePrompt].kind === 'document-workflow'
+        ? '복사했습니다. 최신 보고서 초안과 빈 HWPX 양식을 준비한 Claude 대화에 붙여 넣으세요.'
+        : steps[active].prompts[activePrompt].kind === 'decision'
         ? '복사했습니다. 진행 중인 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
         : '복사했습니다. 진행 중인 AI 채팅에 이어서 붙여 넣으세요.';
       copyTimer = setTimeout(() => {$('copy-prompt').innerHTML = '<span aria-hidden="true">▣</span> 프롬프트 복사';$('copy-prompt').classList.remove('copied');}, 2500);

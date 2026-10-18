@@ -78,7 +78,7 @@
     $('prompt-instruction').textContent = prompt.instruction || (prompt.kind === 'main'
       ? '내 정보 입력 → 프롬프트 생성 → 복사 · 공통 지침 자동 포함'
       : prompt.kind === 'decision'
-        ? 'AI 답변을 검토한 뒤 작성 → 같은 단계 채팅에 붙여 넣기 → 결과 요약 갱신'
+        ? 'AI 답변을 검토한 뒤 작성 → 진행 중인 채팅에 붙여 넣기 → 결과 요약 갱신'
         : '모든 단계 프롬프트에 자동으로 포함되는 공통 지침입니다.');
     const preparations = prompt.preparations || steps[active].preparations || [];
     $('preparation-panel').hidden = prompt.kind === 'decision' || preparations.length === 0;
@@ -214,9 +214,9 @@
       fieldControls[index].optionalInterpretation && !value.trim() ? '사용자 해석 미입력' : value));
     draft.hasGenerated = true;
     draft.message = steps[active].prompts[activePrompt].kind === 'decision'
-      ? '내 결정문을 완성했습니다. 같은 단계 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
+      ? '내 결정문을 완성했습니다. 진행 중인 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
       : steps[active].prompts[activePrompt].repeatSection || steps[active].prompts[activePrompt].kind === 'research-plan'
-        ? '프롬프트를 완성했습니다. 복사해 2단계의 같은 AI 채팅에 붙여 넣으세요.'
+        ? '프롬프트를 완성했습니다. 복사해 진행 중인 AI 채팅에 이어서 붙여 넣으세요.'
         : '공통 지침을 포함한 프롬프트를 완성했습니다. 확인하고 복사하세요.';
     draft.messageError = false;
     updateResult();
@@ -299,8 +299,8 @@
     if (success) {
       $('copy-prompt').textContent = '✓ 복사 완료';$('copy-prompt').classList.add('copied');
       $('copy-status').textContent = steps[active].prompts[activePrompt].kind === 'decision'
-        ? '복사했습니다. 같은 단계의 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
-        : '복사했습니다. 사용할 단계의 AI 채팅에 붙여 넣으세요.';
+        ? '복사했습니다. 진행 중인 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
+        : '복사했습니다. 진행 중인 AI 채팅에 이어서 붙여 넣으세요.';
       copyTimer = setTimeout(() => {$('copy-prompt').innerHTML = '<span aria-hidden="true">▣</span> 프롬프트 복사';$('copy-prompt').classList.remove('copied');}, 2500);
     } else {
       const range = document.createRange();range.selectNodeContents($('prompt-text'));

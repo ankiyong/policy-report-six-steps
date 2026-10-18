@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  if (!window.InstructorAccess?.require()) return;
+  document.getElementById('instructor-logout')?.addEventListener('click', () => window.InstructorAccess.logout());
   const slides = [
     ['보고서와 기획', 'PART 1. 보고서와 기획'],
     ['정책보고서 작성 7단계', '주제·문제 설정, 자료 수집·분석, 개선방안 도출, 실행 가능성 검토, 추진계획 수립, 보고서 작성, 최종 점검'],

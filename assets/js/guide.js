@@ -1,7 +1,10 @@
 /* Custom interaction for the Multiverse adaptation. No external dependencies. */
 (() => {
   'use strict';
-  const steps = window.PROMPT_STEPS;
+  const requestedInstructor = new URLSearchParams(location.search).get('mode') === 'instructor';
+  if (requestedInstructor && !window.InstructorAccess?.require()) return;
+  const instructor = requestedInstructor ? window.INSTRUCTOR_CASE : null;
+  const steps = window.PROMPT_STEPS.filter(step => instructor || step.id !== 'step-7');
   const $ = id => document.getElementById(id);
   const modal = $('prompt-dialog');
   const help = $('help-dialog');
@@ -12,9 +15,19 @@
   const guideScrolls = new Map();
   const writingGuides = window.WRITING_GUIDES;
   const builder = window.PromptBuilder;
-  const instructor = new URLSearchParams(location.search).get('mode') === 'instructor' ? window.INSTRUCTOR_CASE : null;
   const exampleScrolls = new Map();
+  document.body.classList.toggle('is-instructor', !!instructor);
   if (instructor) {
+    document.title = '정책보고서, 7단계로 완성하기 | 강사용 AI 실습 프롬프트';
+    $('intro-title').innerHTML = '정책보고서, <span>7단계로 완성하기.</span>';
+    $('intro-note').innerHTML = '1~6단계는 하나의 AI 채팅에서 초안을 작성합니다.<br><strong>7단계는 Claude에서 첨부 양식에 작성합니다.</strong>';
+    $('intro-eyebrow').innerHTML = '<span class="green-dot"></span> AI WORKSHOP · SEVEN-STEP CHAT GUIDE';
+    $('page-brand-count').textContent = '7단계 채팅 가이드';
+    $('main').setAttribute('aria-label', '공통 지침과 보고서 작성 7단계');
+    $('prompts-download').href = 'prompts.txt';
+    document.querySelectorAll('.instructor-only').forEach(element => { element.hidden = false; });
+    $('instructor-logout').hidden = false;
+    $('instructor-logout').addEventListener('click', () => window.InstructorAccess.logout());
     $('instructor-banner').hidden = false;
     $('instructor-notice').textContent = `${instructor.topic} · ${instructor.notice} 입력·결정은 수정할 수 있으며 새로고침하면 원래 예시로 돌아갑니다.`;
   }
@@ -373,7 +386,7 @@
     if (updateUrl) history.pushState(null, '', `#${step.id}`);
   }
   function clearStepHash() {
-    if (steps.some(s => `#${s.id}` === location.hash)) history.replaceState(null, '', location.pathname + location.search);
+    if (steps.some(s => `#${s.id}` === location.hash) || (!instructor && location.hash === '#step-7')) history.replaceState(null, '', location.pathname + location.search);
   }
   modal.addEventListener('close', () => { rememberScroll(); viewRevision++; resetCopy(); syncScrollLock(); clearStepHash(); if (trigger) trigger.focus({preventScroll:true}); });
   help.addEventListener('close', syncScrollLock);
@@ -441,6 +454,11 @@
     }
   });
   function handleHash() {
+    if (!instructor && location.hash === '#step-7') {
+      if (modal.open) modal.close();
+      clearStepHash();
+      return;
+    }
     const index = steps.findIndex(step => `#${step.id}` === location.hash);
     if (index >= 0) {
       const initialProcess = instructor && index === 6 && new URLSearchParams(location.search).get('process') === 'body' ? 'report-body' : null;

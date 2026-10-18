@@ -111,3 +111,115 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
 .record-add:hover{background:#dcece0}
 .field-section-title{margin:0;font-size:13px;font-weight:750;color:#285b49;border-bottom:1px solid #d2dfd7;padding-bottom:10px}
 @media(max-width:700px){.research-record{padding:12px;gap:17px}}
+
+/* 작성 요령을 읽고 입력으로 이동하는 두 화면 구성. */
+#prompt-dialog{width:min(1720px,calc(100vw - 40px));height:min(1040px,calc(100dvh - 32px));border-radius:9px}
+#prompt-dialog .dialog-layout{display:block;height:100%}
+.dialog-main{height:100%}
+.dialog-heading{padding:23px 28px 19px;border-bottom:0;flex-shrink:0}
+.dialog-identity{display:flex;align-items:center;gap:20px;min-width:0}
+.dialog-thumbnail{width:76px;height:76px;object-fit:cover;border-radius:6px;flex-shrink:0}
+.dialog-heading h2{font-size:25px;letter-spacing:-.7px}
+.dialog-heading .step-description{font-size:12px;margin:6px 0 0;line-height:1.7}
+.dialog-scroll{display:flex;flex-direction:column;gap:12px;padding:0 28px 18px;overflow:hidden;min-height:0;min-width:0}
+.view-tabs{display:flex;gap:7px;flex-shrink:0;border-bottom:1px solid var(--line);padding-top:2px;background:#fff;margin:0 -28px;padding-left:28px;padding-right:28px}
+.view-tabs button{min-width:140px;padding:13px 22px;border:1px solid #d9e2dd;border-bottom:0;border-radius:6px 6px 0 0;background:#f6f8f6;color:#61716b;font-size:13px;font-weight:650;line-height:1.6}
+.view-tabs button[aria-selected=true]{background:#245c50;color:#fff;border-color:#245c50}
+.view-tabs button:hover:not([aria-selected=true]){background:#e9f0ec;color:#234c40}
+.process-tabs{gap:8px;margin:0;flex-shrink:0}
+.process-tabs button{border-radius:20px;padding:8px 14px;background:#fff;font-size:12px}
+.process-tabs button[aria-pressed=true]{background:#dfeee7;border-color:#75a18e;color:#204f41;font-weight:700}
+.guide-panel{display:flex;flex-direction:column;flex:1;min-height:0;min-width:0;background:#fff;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.guide-scroll{flex:1;min-height:0;overflow:auto;padding:22px 25px;scrollbar-width:thin;scrollbar-color:#b8c8c1 transparent;overscroll-behavior:contain}
+.guide-goal{display:flex;gap:15px;align-items:center;padding:17px 20px;border:1px solid #cfe0d7;border-radius:6px;background:#eff6f2;margin-bottom:24px}
+.guide-goal-icon{font-size:32px;color:#285e51;line-height:1}
+.guide-goal h3{margin:0 0 5px;font-size:13px;color:#28594d}
+.guide-goal p{margin:0;font-size:15px;line-height:1.75;word-break:keep-all;color:#35564b}
+.guide-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px}
+.guide-rules-section>h3,.guide-example-heading h3{margin:0;font-size:20px;letter-spacing:-.5px;color:#183c3f}
+.guide-rules{list-style:none;margin:14px 0 0;padding:0}
+.guide-rules li{display:flex;gap:16px;padding:17px 0;min-width:0}
+.guide-rules li+li{border-top:1px solid #e1e9e4}
+.guide-rule-number{display:flex;align-items:center;justify-content:center;flex:0 0 42px;height:42px;border-radius:50%;background:#e7f1eb;color:#285b4e;font-size:15px;font-weight:750;letter-spacing:1px}
+.guide-rules h4,.guide-example h4{font-size:15px;line-height:1.6;margin:0 0 5px;color:#25483f;word-break:keep-all}
+.guide-rules p{font-size:13px;line-height:1.85;margin:0 0 9px;color:#56675e;word-break:keep-all}
+.guide-field-tag{display:inline-block;font-size:11px;line-height:1.6;background:#edf4ef;color:#386452;padding:4px 10px;border-radius:12px;word-break:keep-all}
+.guide-examples{background:#f0f6f2;border:1px solid #d5e3da;border-radius:7px;padding:21px 23px;min-width:0}
+.guide-example-heading{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:15px}
+.guide-example-heading>span{flex-shrink:0;border-radius:15px;padding:5px 10px;font-size:10px;font-weight:650;color:#3b6a59;background:#dfede5}
+.guide-example+.guide-example{margin-top:18px;padding-top:15px;border-top:1px solid #dae6de}
+.guide-example dl{display:grid;grid-template-columns:minmax(75px,.35fr) minmax(0,1fr);gap:8px 12px;margin:9px 0 0;font-size:12px;line-height:1.8}
+.guide-example dt{margin:0;color:#426a59;font-weight:650;word-break:keep-all}
+.guide-example dd{margin:0;color:#3b5146;word-break:keep-all;overflow-wrap:anywhere}
+.guide-check{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;line-height:1.8;color:#586d61}
+.guide-check h3{font-size:12px;margin:0 0 7px;color:#355d4d}
+.guide-check ul{display:flex;flex-wrap:wrap;gap:5px 24px;padding:0;list-style:none;margin:0}
+.guide-check li:before{content:'✓';color:#3d8065;margin-right:7px;font-weight:700}
+.guide-check p{margin:10px 0 0;font-size:11px}.guide-check strong{margin-right:7px;color:#35634f}
+.guide-action-bar{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-shrink:0;padding:16px 25px;border-top:1px solid #d9e5dd;background:#f6f9f7}
+.guide-preparations{min-width:0;max-width:1050px}
+.guide-preparations h4{margin:0 0 5px;font-size:12px;color:#365b4c}
+.guide-preparations ul{margin:0;padding-left:16px;font-size:10px;color:#607568;line-height:1.8;word-break:keep-all}
+.guide-start{flex-shrink:0;text-align:right}
+.guide-start p{margin:0 0 9px;font-size:10px;color:#75867b;line-height:1.7}
+.review-guide{background:#fff;border:1px solid #bbd2c3;color:#32624d;border-radius:5px;padding:9px 12px;flex-shrink:0;font-size:11px;line-height:1.5;white-space:nowrap}
+.review-guide:hover{background:#e9f3ec}
+.prompt-panel{flex:1;min-height:0;display:flex;flex-direction:column}
+.prompt-toolbar{flex-direction:row;align-items:center;padding:12px 18px;background:#eff5f0;flex-shrink:0}
+.prompt-toolbar h3{font-size:12px}
+.prompt-workspace{flex:1;min-height:0;min-width:0}
+.builder-heading h4,.output-toolbar h4{font-size:15px}
+.prompt-fields{gap:21px}
+.field-hint{font-size:11px;color:#687b6e}
+.generation-status:empty,.copy-status:empty{display:none}
+.dialog-navigation{flex-shrink:0;padding:10px 28px}
+@media(min-width:1250px){
+  .prompt-field{display:grid;grid-template-columns:minmax(170px,.8fr) minmax(0,1.4fr);column-gap:18px;align-content:start}
+  .prompt-field label{grid-column:1;grid-row:1;margin:3px 0 4px;word-break:keep-all}
+  .prompt-field .field-hint{grid-column:1;grid-row:2;margin:0}
+  .prompt-field .prompt-input{grid-column:2;grid-row:1 / span 3;min-height:88px}
+  .prompt-field .field-error{grid-column:2;grid-row:4}
+  .research-record .prompt-field{display:block}
+  .research-record .field-hint{margin-top:6px}
+}
+@media(min-width:900px) and (max-height:740px){
+  .dialog-heading{padding:12px 24px}.dialog-thumbnail{width:50px;height:50px}
+  .dialog-heading h2{font-size:21px}.dialog-heading .step-description{font-size:11px;margin-top:2px}
+  .dialog-scroll{overflow:hidden}.prompt-panel{flex:1;min-height:0}
+  .view-tabs button{padding:8px 20px}.guide-action-bar{padding:10px 18px}
+  .guide-preparations ul{max-height:70px;overflow:auto}
+  .dialog-navigation{padding:6px 24px}
+}
+@media(max-width:899px){
+  #prompt-dialog{width:calc(100vw - 24px);height:calc(100dvh - 24px)}
+  .dialog-heading{padding:20px}.dialog-thumbnail{width:60px;height:60px}.dialog-identity{gap:14px}
+  .dialog-heading h2{font-size:22px}
+  .dialog-scroll{padding:0 20px 15px;overflow:auto;display:block}
+  .view-tabs{margin:0 -20px 14px;padding:0 20px;position:sticky;top:0;z-index:2}
+  .view-tabs button{min-width:0;flex:1;padding:11px 9px;font-size:12px}
+  .process-tabs{margin-bottom:14px}.guide-panel{overflow:visible;display:block}
+  .guide-scroll{padding:20px;overflow:visible}.guide-grid{grid-template-columns:1fr;gap:20px}
+  .guide-action-bar{flex-direction:column;align-items:stretch;gap:14px;padding:20px}
+  .guide-start{text-align:left}.guide-start .generate-button{width:100%}
+  .guide-check ul{display:block}.guide-check li+li{margin-top:6px}
+  .prompt-panel{display:block}.prompt-toolbar{gap:12px;flex-wrap:wrap}
+  .prompt-workspace{display:block}.prompt-output{border-top:1px solid var(--line)}
+  .prompt-output pre{max-height:65dvh;overflow:auto}
+  .guide-rules-section>h3,.guide-example-heading h3{font-size:18px}
+  .guide-preparations ul{font-size:11px}
+}
+@media(max-width:600px){
+  #prompt-dialog{width:100vw;height:100dvh;margin:0;border-radius:0}
+  .dialog-heading{padding:16px}.dialog-thumbnail{width:48px;height:48px}
+  .dialog-heading h2{font-size:19px}.dialog-heading .step-description{font-size:11px;line-height:1.5}
+  .dialog-scroll{padding:0 12px 12px}.view-tabs{margin:0 -12px 12px;padding:0 12px;gap:4px}
+  .view-tabs button{font-size:11px;padding:10px 6px}.process-tabs button{font-size:10px;padding:8px 10px}
+  .guide-scroll{padding:16px}.guide-goal{padding:13px;margin-bottom:19px;gap:10px}
+  .guide-goal p{font-size:13px}.guide-goal-icon{font-size:25px}
+  .guide-rules li{gap:12px}.guide-rule-number{flex-basis:32px;height:32px;font-size:12px}
+  .guide-rules h4{font-size:14px}.guide-rules p{font-size:12px}
+  .guide-examples{padding:16px}.guide-example dl{grid-template-columns:1fr;gap:3px}
+  .guide-example dd+dt{margin-top:8px}.guide-action-bar{padding:16px}
+  .review-guide{font-size:10px;padding:8px 10px;margin-left:auto}
+  .dialog-navigation{padding:9px 16px;padding-bottom:max(9px,env(safe-area-inset-bottom))}
+}

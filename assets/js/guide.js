@@ -6,8 +6,11 @@
   const modal = $('prompt-dialog');
   const help = $('help-dialog');
   let active = 0, activePrompt = 0, trigger = null, copyTimer;
+  let activeView = 'guide', activeInputPrompt = 0, initialized = false;
   let viewRevision = 0, fieldControls = [];
   const drafts = new Map();
+  const guideScrolls = new Map();
+  const writingGuides = window.WRITING_GUIDES;
   const builder = window.PromptBuilder;
   const imagePath = index => `images/steps/${steps[index].id}.webp`;
   const create = (tag, className, value) => {
@@ -124,11 +127,12 @@
       input.required = !optionalInterpretation;
       input.value = draft.values[index];
       input.placeholder = field.placeholder || '내용을 입력하거나 자료를 붙여 넣으세요.';
+      const fieldHint = writingGuides[prompt.id]?.fieldHints[field.label];
       const hint = create('p', 'field-hint', optionalInterpretation
         ? '직접 해석한 내용이 없으면 비워두세요. 생성 시 ‘사용자 해석 미입력’으로 표시합니다.'
-        : '양식 내용이나 파일명을 적어주세요. 실제 파일은 AI 대화에 직접 첨부해야 합니다.');
+        : field.isAttachment ? '양식 내용이나 파일명을 적어주세요. 실제 파일은 AI 대화에 직접 첨부해야 합니다.' : fieldHint || '');
       hint.id = `${inputId}-hint`;
-      hint.hidden = !field.isAttachment && !optionalInterpretation;
+      hint.hidden = !field.isAttachment && !optionalInterpretation && !fieldHint;
       const error = create('p', 'field-error', '이 항목을 입력해주세요. 모르면 ‘확인 필요’라고 적을 수 있습니다.');
       error.id = `${inputId}-error`;
       error.hidden = !draft.invalid.has(index);
@@ -178,19 +182,73 @@
     if (target >= 0) fieldControls[target].input.focus();
   }
   $('add-record').addEventListener('click', () => changeRecords());
-  function showPrompt(index, focusTab = false) {
-    activePrompt = index;
-    const prompt = steps[active].prompts[index];
+  function rememberScroll() {
+    if (!initialized) return;
+    const prompt = steps[active].prompts[activePrompt];
+    if (activeView === 'guide') {
+      guideScrolls.set(prompt.id, { guide: $('guide-scroll').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
+    } else {
+      currentDraft().scroll = { input: $('input-scroll').scrollTop || 0, output: $('prompt-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 };
+    }
+  }
+  function renderGuide() {
+    const step = steps[active];
+    const prompt = step.prompts[activeInputPrompt];
+    const guide = writingGuides[prompt.id];
+    if (!guide) return;
+    $('guide-goal').textContent = guide.goal;
+    $('guide-rules').replaceChildren(...guide.rules.map((rule, index) => {
+      const item = create('li');
+      const number = create('span', 'guide-rule-number', String(index + 1).padStart(2, '0'));
+      number.setAttribute('aria-hidden', 'true');
+      const content = create('div');
+      content.append(create('h4', '', rule.title), create('p', '', rule.text), create('span', 'guide-field-tag', rule.fields));
+      item.append(number, content);
+      return item;
+    }));
+    $('guide-examples').replaceChildren(...guide.examples.map(example => {
+      const section = create('section', 'guide-example');
+      section.append(create('h4', '', example.title));
+      const list = create('dl');
+      example.items.forEach(item => list.append(create('dt', '', item.label), create('dd', '', item.text)));
+      section.append(list);
+      return section;
+    }));
+    $('guide-checkpoints').replaceChildren(...guide.checkpoints.map(item => create('li', '', item)));
+    $('guide-preparation-list').replaceChildren(...(prompt.preparations || step.preparations || []).map(item => create('li', '', item)));
+  }
+  function showView(view, focusTab = false) {
+    rememberScroll();
+    activeView = active === 0 ? 'input' : view;
+    activePrompt = activeView === 'decision' ? steps[active].prompts.findIndex(prompt => prompt.kind === 'decision') : activeInputPrompt;
+    const prompt = steps[active].prompts[activePrompt];
     $('prompt-title').textContent = prompt.title;
     renderFields();
     updateResult();
-    $('input-scroll').scrollTop = 0;
-    $('prompt-text').scrollTop = 0;
-    const tabs = Array.from($('prompt-tabs').children);
-    tabs.forEach((tab, i) => {tab.setAttribute('aria-selected', String(i === index));tab.tabIndex = i === index ? 0 : -1;});
-    $('prompt-panel').setAttribute('aria-labelledby', tabs.length ? tabs[index].id : 'prompt-title');
-    if (focusTab && tabs[index]) tabs[index].focus();
+    renderGuide();
+    $('guide-panel').hidden = activeView !== 'guide';
+    $('prompt-panel').hidden = activeView === 'guide';
+    $('review-guide').hidden = active === 0 || activeView === 'decision';
+    $('view-tabs').hidden = active === 0;
+    $('prompt-tabs').hidden = activeView === 'decision' || $('prompt-tabs').children.length < 2;
+    Array.from($('view-tabs').children).forEach(tab => {
+      const selected = tab.id === `view-${activeView}-tab`;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    });
+    Array.from($('prompt-tabs').children).forEach((tab, i) => tab.setAttribute('aria-pressed', String(i === activeInputPrompt)));
+    $('prompt-panel').setAttribute('aria-labelledby', active === 0 ? 'prompt-title' : `view-${activeView === 'decision' ? 'decision' : 'input'}-tab`);
+    const scroll = currentDraft().scroll || {};
+    const guideScroll = guideScrolls.get(prompt.id) || {};
+    $('input-scroll').scrollTop = scroll.input || 0;
+    $('prompt-text').scrollTop = scroll.output || 0;
+    $('guide-scroll').scrollTop = guideScroll.guide || 0;
+    $('dialog-scroll').scrollTop = (activeView === 'guide' ? guideScroll.outer : scroll.outer) || 0;
+    initialized = true;
+    if (focusTab) $(`view-${activeView}-tab`).focus({preventScroll:true});
   }
+  $('start-writing').addEventListener('click', () => { showView('input'); $('prompt-title').focus({preventScroll:true}); });
+  $('review-guide').addEventListener('click', () => { showView('guide'); $('guide-title').focus({preventScroll:true}); });
   $('prompt-form').addEventListener('submit', event => {
     event.preventDefault();
     const draft = currentDraft();
@@ -224,37 +282,49 @@
     $('output-title').focus();
   });
   function openStep(index, updateUrl = false) {
+    rememberScroll();
+    initialized = false;
     active = index;
+    activeInputPrompt = 0;
+    activePrompt = 0;
     const step = steps[index];
-    $('dialog-number').textContent = step.number;
-    $('dialog-step-label').textContent = index === 0 ? 'START HERE' : `STEP ${step.number}`;
     $('dialog-kicker').textContent = index === 0 ? '공통 지침 · 모든 단계에 자동 포함' : `STEP ${step.number} / ${totalSteps}`;
     $('dialog-title').textContent = step.title;
-    $('dialog-description').textContent = step.description;
+    $('dialog-description').textContent = step.subtitle;
     $('dialog-decision').textContent = step.decision;
-    $('dialog-example').textContent = step.example;
     $('dialog-image').src = imagePath(index);
     $('prev-step').disabled = index === 0;
     $('next-step').disabled = index === steps.length - 1;
     $('step-count').textContent = index === 0 ? `START / ${totalSteps}` : `${step.number} / ${totalSteps}`;
-    $('prompt-tabs').replaceChildren();
-    if (step.prompts.length > 1) step.prompts.forEach((prompt, i) => {
-      const tab = create('button', '', prompt.title);
-      tab.type = 'button';tab.id = `tab-${step.id}-${i}`;
-      tab.setAttribute('role', 'tab');tab.setAttribute('aria-controls', 'prompt-panel');
-      tab.addEventListener('click', () => showPrompt(i));
+    $('view-tabs').replaceChildren();
+    const views = [['guide', '작성 요령'], ['input', '입력·프롬프트'], ['decision', '내 결정 기록']];
+    if (index > 0) views.forEach(([view, title], i) => {
+      const tab = create('button', '', title);
+      tab.id = `view-${view}-tab`; tab.type = 'button';
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-controls', view === 'guide' ? 'guide-panel' : 'prompt-panel');
+      tab.addEventListener('click', () => showView(view));
       tab.addEventListener('keydown', event => {
         let target;
-        if (event.key === 'ArrowRight') target = (i + 1) % step.prompts.length;
-        if (event.key === 'ArrowLeft') target = (i - 1 + step.prompts.length) % step.prompts.length;
+        if (event.key === 'ArrowRight') target = (i + 1) % views.length;
+        if (event.key === 'ArrowLeft') target = (i - 1 + views.length) % views.length;
         if (event.key === 'Home') target = 0;
-        if (event.key === 'End') target = step.prompts.length - 1;
-        if (target !== undefined) {event.preventDefault();showPrompt(target, true);}
+        if (event.key === 'End') target = views.length - 1;
+        if (target !== undefined) { event.preventDefault(); showView(views[target][0], true); }
       });
+      $('view-tabs').append(tab);
+    });
+    $('prompt-tabs').replaceChildren();
+    const processes = step.prompts.filter(prompt => prompt.kind !== 'decision');
+    if (processes.length > 1) processes.forEach((prompt, i) => {
+      const tab = create('button', '', prompt.title);
+      tab.type = 'button';tab.id = `tab-${step.id}-${i}`;
+      tab.setAttribute('aria-controls', 'guide-panel prompt-panel');
+      tab.addEventListener('click', () => { activeInputPrompt = i; showView(activeView); });
       $('prompt-tabs').append(tab);
     });
-    showPrompt(0);
     if (!modal.open) modal.showModal();
+    showView(index === 0 ? 'input' : 'guide');
     syncScrollLock();
     $('dialog-scroll').scrollTop = 0;
     $('dialog-title').focus({preventScroll:true});
@@ -263,7 +333,7 @@
   function clearStepHash() {
     if (steps.some(s => `#${s.id}` === location.hash)) history.replaceState(null, '', location.pathname + location.search);
   }
-  modal.addEventListener('close', () => { viewRevision++; resetCopy(); syncScrollLock(); clearStepHash(); if (trigger) trigger.focus({preventScroll:true}); });
+  modal.addEventListener('close', () => { rememberScroll(); viewRevision++; resetCopy(); syncScrollLock(); clearStepHash(); if (trigger) trigger.focus({preventScroll:true}); });
   help.addEventListener('close', syncScrollLock);
   $('close-prompt').addEventListener('click', () => modal.close());
   $('close-help').addEventListener('click', () => help.close());

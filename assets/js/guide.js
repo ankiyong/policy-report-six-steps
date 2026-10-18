@@ -4,7 +4,14 @@
   const requestedInstructor = new URLSearchParams(location.search).get('mode') === 'instructor';
   if (requestedInstructor && !window.InstructorAccess?.require()) return;
   const instructor = requestedInstructor ? window.INSTRUCTOR_CASE : null;
-  const steps = window.PROMPT_STEPS.filter(step => instructor || step.id !== 'step-7');
+  const setup = window.SKILL_SETUP;
+  const steps = window.PROMPT_STEPS.map(step => !instructor && step.id === 'step-7' ? {
+    ...step, audience: 'student', title: setup.title, subtitle: setup.subtitle,
+    description: setup.description, decision: '스킬 이름·설명·본문을 확인하고 저장한 뒤 사용 가능 여부를 확인합니다.',
+    badge: 'Claude · 스킬 추가', eyebrow: 'ADD YOUR SKILL', image: 'images/steps/common.webp',
+    preparations: [], prompts: [{id: 'step-7-setup', kind: 'skill-setup', title: '스킬 등록 확인 프롬프트',
+      text: setup.verificationPrompt, instruction: '스킬을 저장하고 켠 뒤 Claude 대화에서 사용 가능 여부를 확인하세요.'}]
+  } : step);
   const $ = id => document.getElementById(id);
   const modal = $('prompt-dialog');
   const help = $('help-dialog');
@@ -38,6 +45,27 @@
     if (value !== undefined) el.textContent = value;
     return el;
   };
+  $('setup-title').textContent = setup.title;
+  $('setup-description').textContent = setup.description;
+  $('setup-note').textContent = setup.note;
+  $('skill-name').textContent = 'hwpx-writer';
+  $('skill-description').textContent = setup.descriptionForSkill;
+  $('skill-instructions').textContent = setup.instructions;
+  $('setup-check-text').textContent = setup.verificationPrompt;
+  $('download-skill-instructions').href = setup.instructionFile;
+  $('setup-steps').replaceChildren(...setup.steps.map((item, index) => {
+    const row = create('li');
+    row.append(create('span', 'setup-number', String(index + 1).padStart(2, '0')));
+    const content = create('div');
+    content.append(create('h4', '', item.title), create('p', '', item.text));
+    row.append(content);
+    return row;
+  }));
+  $('setup-sources').replaceChildren(...setup.sources.map(source => {
+    const link = create('a', '', source.title + ' ↗');
+    link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+    return link;
+  }));
   const totalSteps = String(steps.length - 1).padStart(2, '0');
   steps.forEach((step, index) => {
     const article = create('article', 'thumb');
@@ -212,7 +240,7 @@
       guideScrolls.set(prompt.id, { guide: $('guide-scroll').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
     } else if (activeView === 'example') {
       exampleScrolls.set(prompt.id, { text: $('example-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
-    } else {
+    } else if (activeView !== 'setup') {
       currentDraft().scroll = { input: $('input-scroll').scrollTop || 0, output: $('prompt-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 };
     }
   }
@@ -258,8 +286,11 @@
     updateResult();
     renderGuide();
     $('guide-panel').hidden = activeView !== 'guide';
-    $('prompt-panel').hidden = activeView === 'guide' || activeView === 'example';
+    $('prompt-panel').hidden = activeView === 'guide' || activeView === 'example' || activeView === 'setup';
     $('example-panel').hidden = activeView !== 'example';
+    $('setup-panel').hidden = activeView !== 'setup';
+    $('setup-status').textContent = '';
+    ['copy-skill-name', 'copy-skill-description', 'copy-skill-instructions', 'copy-skill-check'].forEach(id => { $(id).disabled = false; });
     $('example-status').textContent = '';
     $('copy-example').disabled = false;
     if (instructor && active > 0) {
@@ -273,7 +304,7 @@
       $('copy-example').textContent = isWorkflow ? '진행 예시 복사' : '작성 결과 복사';
       $('example-text').textContent = `${instructor.notice}\n\n${sample?.result || ''}${decisionResult ? '\n\n━━━━━━━━━━━━━━━━━━━━\n내 결정 반영 결과\n\n' + decisionResult : ''}`;
     }
-    $('review-guide').hidden = active === 0 || activeView === 'decision';
+    $('review-guide').hidden = active === 0 || activeView === 'decision' || prompt.kind === 'skill-setup';
     $('view-tabs').hidden = active === 0;
     $('prompt-tabs').hidden = activeView === 'decision' || $('prompt-tabs').children.length < 2;
     Array.from($('view-tabs').children).forEach(tab => {
@@ -349,14 +380,17 @@
     $('step-count').textContent = index === 0 ? `START / ${totalSteps}` : `${step.number} / ${totalSteps}`;
     $('view-tabs').replaceChildren();
     const isWorkflow = step.prompts[0].kind === 'document-workflow';
-    const views = [['guide', '작성 요령'], ['input', isWorkflow ? '프롬프트' : '입력·프롬프트']];
+    const isSetup = step.prompts[0].kind === 'skill-setup';
+    const views = isSetup ? [['setup', '스킬 추가 안내'], ['input', '확인 프롬프트']]
+      : [['guide', '작성 요령'], ['input', isWorkflow ? '프롬프트' : '입력·프롬프트']];
     if (step.prompts.some(prompt => prompt.kind === 'decision')) views.push(['decision', '내 결정 기록']);
     if (instructor) views.push(['example', isWorkflow ? '진행 예시' : '완성 예시']);
+    if (instructor && step.id === 'step-7') views.unshift(['setup', '스킬 추가']);
     if (index > 0) views.forEach(([view, title], i) => {
       const tab = create('button', '', title);
       tab.id = `view-${view}-tab`; tab.type = 'button';
       tab.setAttribute('role', 'tab');
-      tab.setAttribute('aria-controls', view === 'guide' ? 'guide-panel' : view === 'example' ? 'example-panel' : 'prompt-panel');
+      tab.setAttribute('aria-controls', view === 'setup' ? 'setup-panel' : view === 'guide' ? 'guide-panel' : view === 'example' ? 'example-panel' : 'prompt-panel');
       tab.addEventListener('click', () => showView(view));
       tab.addEventListener('keydown', event => {
         let target;
@@ -379,14 +413,14 @@
       $('prompt-tabs').append(tab);
     });
     if (!modal.open) modal.showModal();
-    showView(index === 0 ? 'input' : instructor ? (initialProcess === 'report-body' ? 'example' : 'input') : 'guide');
+    showView(index === 0 ? 'input' : isSetup ? 'setup' : instructor ? (initialProcess === 'report-body' ? 'example' : 'input') : 'guide');
     syncScrollLock();
     $('dialog-scroll').scrollTop = 0;
     $('dialog-title').focus({preventScroll:true});
     if (updateUrl) history.pushState(null, '', `#${step.id}`);
   }
   function clearStepHash() {
-    if (steps.some(s => `#${s.id}` === location.hash) || (!instructor && location.hash === '#step-7')) history.replaceState(null, '', location.pathname + location.search);
+    if (steps.some(s => `#${s.id}` === location.hash)) history.replaceState(null, '', location.pathname + location.search);
   }
   modal.addEventListener('close', () => { rememberScroll(); viewRevision++; resetCopy(); syncScrollLock(); clearStepHash(); if (trigger) trigger.focus({preventScroll:true}); });
   help.addEventListener('close', syncScrollLock);
@@ -441,7 +475,9 @@
     if (!success) success = fallbackCopy(text);
     if (success) {
       $('copy-prompt').textContent = '✓ 복사 완료';$('copy-prompt').classList.add('copied');
-      $('copy-status').textContent = steps[active].prompts[activePrompt].kind === 'document-workflow'
+      $('copy-status').textContent = steps[active].prompts[activePrompt].kind === 'skill-setup'
+        ? '복사했습니다. 스킬을 저장하고 켠 Claude 대화에 붙여 넣어 사용 가능 여부를 확인하세요.'
+        : steps[active].prompts[activePrompt].kind === 'document-workflow'
         ? '복사했습니다. 최신 보고서 초안과 빈 HWPX 양식을 준비한 Claude 대화에 붙여 넣으세요.'
         : steps[active].prompts[activePrompt].kind === 'decision'
         ? '복사했습니다. 진행 중인 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
@@ -453,12 +489,31 @@
       $('copy-status').textContent = '자동 복사가 제한되어 내용을 선택했습니다. Ctrl+C 또는 ⌘C로 복사하세요. 모바일에서는 길게 눌러 복사하세요.';
     }
   });
-  function handleHash() {
-    if (!instructor && location.hash === '#step-7') {
-      if (modal.open) modal.close();
-      clearStepHash();
-      return;
+  [
+    ['copy-skill-name', 'skill-name', '스킬 이름을 복사했습니다.'],
+    ['copy-skill-description', 'skill-description', '스킬 설명을 복사했습니다.'],
+    ['copy-skill-instructions', 'skill-instructions', '마크다운 본문 전체를 복사했습니다. Claude의 스킬 지침에 붙여 넣으세요.'],
+    ['copy-skill-check', 'setup-check-text', '확인 문구를 복사했습니다. 스킬을 저장하고 켠 Claude 대화에서 사용하세요.']
+  ].forEach(([buttonId, textId, message]) => $(buttonId).addEventListener('click', async () => {
+    if (activeView !== 'setup') return;
+    const revision = viewRevision;
+    const text = $(textId).textContent;
+    $(buttonId).disabled = true;
+    let success = false;
+    if (window.isSecureContext && navigator.clipboard) {
+      try { await navigator.clipboard.writeText(text); success = true; } catch (_) { /* Local copy fallback below. */ }
     }
+    if (revision !== viewRevision || !modal.open || activeView !== 'setup') return;
+    $(buttonId).disabled = false;
+    if (!success) success = fallbackCopy(text, buttonId);
+    $('setup-status').textContent = success ? message : '자동 복사가 제한되어 내용을 선택했습니다. Ctrl+C 또는 ⌘C로 복사하세요.';
+    if (!success) {
+      if (textId === 'skill-instructions') $('skill-instructions').parentElement.open = true;
+      const range = document.createRange(); range.selectNodeContents($(textId));
+      const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+    }
+  }));
+  function handleHash() {
     const index = steps.findIndex(step => `#${step.id}` === location.hash);
     if (index >= 0) {
       const initialProcess = instructor && index === 6 && new URLSearchParams(location.search).get('process') === 'body' ? 'report-body' : null;

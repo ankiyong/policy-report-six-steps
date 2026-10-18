@@ -27,7 +27,7 @@
   let expanded = false;
   let previousFocus = null;
   const imagePath = index => `images/lecture-${String(index + 1).padStart(2, '0')}.webp`;
-  const keyboardHint = '슬라이드 화면에서 ← → 방향키로 이동 · Home 처음 · End 마지막';
+  const keyboardHint = '화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막';
 
   function stopAutoplay(message) {
     if (timer !== null) window.clearInterval(timer);
@@ -97,7 +97,14 @@
   autoplay.addEventListener('click', () => timer === null ? startAutoplay() : stopAutoplay(`자동 재생을 멈췄습니다. ${keyboardHint}`));
   $('slide-interval').addEventListener('change', () => { if (timer !== null) startAutoplay(); });
   image.addEventListener('error', () => { $('slide-error').hidden = false; stopAutoplay('이미지 로딩을 확인해주세요. PDF 원본으로도 강의를 진행할 수 있습니다.'); });
-  stage.addEventListener('click', event => { if (!event.target.closest('a')) stage.focus({preventScroll: true}); });
+  // One click event covers mouse, touch and pen without a second pointerup advance.
+  stage.addEventListener('click', event => {
+    if ((event.button !== undefined && event.button !== 0) || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.target.closest('a,button,input,select,textarea,summary,[contenteditable="true"]')) return;
+    stage.focus({preventScroll: true});
+    renderSlide(current + 1, true);
+    if (current === slides.length - 1) status.textContent = `마지막 슬라이드입니다. ${keyboardHint}`;
+  });
 
   function syncFullscreenButton() {
     const isFullscreen = document.fullscreenElement === player || expanded;
@@ -154,7 +161,8 @@
     const target = event.target;
     if (target.closest && target.closest('button,a,input,select,textarea,summary,[contenteditable="true"]')) return;
     if (target !== document.body && !stage.contains(target)) return;
-    const keys = {ArrowLeft: current - 1, ArrowRight: current + 1, Home: 0, End: slides.length - 1};
+    const keys = {ArrowLeft: current - 1, ArrowRight: current + 1, PageUp: current - 1, PageDown: current + 1,
+      ' ': current + 1, Enter: current + 1, Home: 0, End: slides.length - 1};
     if (!(event.key in keys)) return;
     event.preventDefault();
     renderSlide(keys[event.key], true);

@@ -8,9 +8,10 @@
   <meta name="description" content="사람의 판단과 선택으로 AI와 정책보고서를 작성하는 9단계 강의, 10단계 한 장 카드뉴스·포스터 만들기와 실습 예시">
   <title>강사 강의실 | AI와 함께 쓰는 정책보고서</title>
   <link rel="stylesheet" href="assets/css/lecture.css?v=20261019-original-slides">
-  <script src="assets/js/lecture.js?v=20261020-insert-prologue" defer></script>
+  <script src="assets/js/slide-navigation.js?v=20261020-presenter" defer></script>
+  <script src="assets/js/lecture.js?v=20261020-presenter" defer></script>
   <link rel="stylesheet" href="assets/css/card-news-lecture.css?v=20261019-card-news">
-  <script src="assets/js/card-news-lecture.js?v=20261019-card-news" defer></script>
+  <script src="assets/js/card-news-lecture.js?v=20261020-presenter" defer></script>
 </head>
 <body>
   <noscript class="access-noscript"><p>강사용 입장은 JavaScript가 필요합니다. <a href="practice.html">수강생 실습</a> 또는 <a href="index.html">입장 선택</a>으로 이동하세요.</p></noscript>
@@ -38,8 +39,9 @@
           <div class="slide-navigation"><button id="slide-prev" type="button" class="control-button" disabled aria-label="이전 슬라이드"><span aria-hidden="true">←</span> 이전</button><button id="slide-next" type="button" class="control-button" aria-label="다음 슬라이드">다음 <span aria-hidden="true">→</span></button></div>
           <div class="playback-controls"><label for="slide-interval" class="visually-hidden">자동 재생 간격</label><select id="slide-interval" aria-label="자동 재생 간격"><option value="15">15초마다</option><option value="30" selected>30초마다</option><option value="60">60초마다</option></select><button id="slide-autoplay" type="button" class="control-button" aria-pressed="false">자동 재생</button><button id="slide-fullscreen" type="button" class="control-button" aria-pressed="false"><span aria-hidden="true">⛶</span> 전체 화면</button></div>
         </div>
-        <p id="player-status" class="player-status" role="status" aria-live="polite">화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막</p>
+        <p id="player-status" class="player-status" role="status" aria-live="polite">포인터(Page Up·Down/방향키): 이전·다음 · 화면 클릭·터치: 다음 장 · Space·Enter: 다음 장 · Home 처음 · End 마지막</p>
       </div>
+      <p class="lecture-note">사용할 강의의 제목·화면·버튼·미리보기 중 한 곳을 선택하면 포인터의 이전·다음 버튼으로 해당 강의만 이동합니다. 전체 화면에서는 표시 중인 강의가 우선합니다.</p>
       <details class="slide-overview"><summary>전체 슬라이드 보기 <span>36장</span></summary><div id="slide-thumbnails" class="slide-thumbnails" role="group" aria-label="슬라이드 선택"></div></details>
       <p class="lecture-note">기존 8번째 장표 뒤에 추가 강의안 18쪽을 삽입했습니다. 기존 9번째 장표부터는 27번째로 이어지며, 전체 36장입니다. 앞서 교체한 두 장의 9단계 이미지도 유지했고, 통합 PDF에도 같은 순서와 내용을 반영했습니다.</p>
       <noscript><p class="noscript-note">슬라이드쇼를 사용하려면 JavaScript를 켜주세요. <a href="lecture.pdf?v=20261020-insert-prologue">통합 강의 PDF 열기</a>로 강의안을 볼 수 있습니다.</p></noscript>
@@ -58,8 +60,9 @@
           <div class="slide-navigation"><button id="cardnews-prev" type="button" class="control-button" disabled aria-label="이전 보고서 시각화 슬라이드"><span aria-hidden="true">←</span> 이전</button><button id="cardnews-next" type="button" class="control-button" aria-label="다음 보고서 시각화 슬라이드">다음 <span aria-hidden="true">→</span></button></div>
           <div class="playback-controls"><button id="cardnews-fullscreen" type="button" class="control-button" aria-pressed="false"><span aria-hidden="true">⛶</span> 전체 화면</button></div>
         </div>
-        <p id="cardnews-status" class="player-status" role="status" aria-live="polite">이 화면을 선택한 뒤 방향키로 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막</p>
+        <p id="cardnews-status" class="player-status" role="status" aria-live="polite">포인터(Page Up·Down/방향키): 이전·다음 · 화면 클릭·터치: 다음 장 · Space·Enter: 다음 장 · Home 처음 · End 마지막</p>
       </div>
+      <p class="lecture-note">사용할 강의의 제목·화면·버튼·미리보기 중 한 곳을 선택하면 포인터의 이전·다음 버튼으로 해당 강의만 이동합니다. 전체 화면에서는 표시 중인 강의가 우선합니다.</p>
       <details class="slide-overview"><summary>시각화 강의 전체 보기 <span>7장 · 원문 33~39쪽</span></summary><div id="cardnews-thumbnails" class="slide-thumbnails" role="group" aria-label="보고서 시각화 슬라이드 선택"></div></details>
       <div class="cardnews-next-step"><p class="lecture-note">10단계 · 한 장 카드뉴스·포스터 만들기. 원문 강의는 한 장의 포스터 제작을 다룹니다. 슬라이드에서 잘려 보이는 문구도 10단계의 ‘PDF 원문’ 탭에서 전체를 확인·복사할 수 있습니다. 완성 보고서의 근거와 수치를 유지하고, 이미지에 담을 핵심 내용과 표현은 사람이 선택합니다.</p><a class="button secondary" href="practice.html#step-10">10단계 · 한 장 카드뉴스·포스터 만들기 <span aria-hidden="true">→</span></a></div>
       <noscript><p class="noscript-note"><a href="card-news-lecture.pdf">보고서 시각화 PDF 열기</a>로 강의안을 볼 수 있습니다.</p></noscript>

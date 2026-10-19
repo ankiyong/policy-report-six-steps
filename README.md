@@ -60,6 +60,9 @@
 - assets/js/card-news-lecture.js, assets/css/card-news-lecture.css: 33~39쪽 별도 슬라이드쇼
 - assets/js/skill-setup.js, hwpx-writer-instructions.md: 선택 부록 자료
 
+## 강의용 포인터 입력
+강사용 두 슬라이드는 Page Up·Down 또는 방향키를 보내는 프레젠터를 지원합니다. 사용할 강의의 제목·화면·버튼·미리보기를 선택하면 이후 포인터 입력은 해당 강의에만 전달됩니다. 전체 화면·확장 화면을 우선하며, 이전·다음 버튼 사용 후에도 계속 작동합니다. 입력란·재생 간격 선택의 기본 키보드 동작과 버튼의 Space·Enter 동작은 유지합니다. 클릭·터치로 다음 장, Home·End로 처음·마지막 장 이동도 지원합니다.
+
 ## 실행·배포
 GitHub Pages는 master 브랜치 루트에서 배포합니다. 단계 직접 주소는 #step-1 ~ #step-10이며 부록은 #appendix-skill입니다. 로컬 검토는 정적 HTTP 서버를 사용합니다.
 입력·공란 분기·단계 이동·내 결정 기록·PDF 원문 복사·다운로드·강사용 예시·부록·모바일·두 슬라이드쇼의 독립 조작을 검증합니다.

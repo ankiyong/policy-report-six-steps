@@ -18,7 +18,7 @@
     '이미지 생성',
     '원문과 대조'
   ];
-  const keyboardHint = '이 화면을 선택한 뒤 방향키로 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막';
+  const keyboardHint = "포인터(Page Up·Down/방향키): 이전·다음 · 화면 클릭·터치: 다음 장 · Space·Enter: 다음 장 · Home 처음 · End 마지막";
   let current = 0;
   let expanded = false;
   let previousFocus = null;
@@ -122,7 +122,7 @@
   });
   document.addEventListener('fullscreenchange', syncFullscreenButton);
 
-  // Keep navigation scoped to this player so the report lecture never advances with it.
+  // Keep fullscreen focus handling here; presenter navigation is shared.
   player.addEventListener('keydown', event => {
     if (event.key === 'Escape' && expanded) {
       event.preventDefault();
@@ -142,16 +142,12 @@
       }
       return;
     }
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-    if (document.activeElement !== stage || event.target !== stage) return;
-    const keys = {
-      ArrowLeft: current - 1, ArrowRight: current + 1,
-      PageUp: current - 1, PageDown: current + 1,
-      ' ': current + 1, Enter: current + 1, Home: 0, End: titles.length - 1
-    };
-    if (!(event.key in keys)) return;
-    event.preventDefault();
-    renderSlide(keys[event.key]);
+
   });
+  window.LectureNavigation.register({player, stage, navigate: action => {
+    const fromThumbnail = thumbnails.contains(document.activeElement);
+    renderSlide(action === 'first' ? 0 : action === 'last' ? titles.length - 1 : current + action);
+    if (fromThumbnail) thumbnails.children[current].focus({preventScroll: true});
+  }});
   renderSlide(0);
 })();

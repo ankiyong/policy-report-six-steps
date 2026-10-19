@@ -197,7 +197,7 @@
   let expanded = false;
   let previousFocus = null;
   const imagePath = index => slides[index][2];
-  const keyboardHint = '화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막';
+  const keyboardHint = "포인터(Page Up·Down/방향키): 이전·다음 · 화면 클릭·터치: 다음 장 · Space·Enter: 다음 장 · Home 처음 · End 마지막";
 
   function stopAutoplay(message) {
     if (timer !== null) window.clearInterval(timer);
@@ -327,15 +327,12 @@
       }
       return;
     }
-    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-    const target = event.target;
-    if (target.closest && target.closest('button,a,input,select,textarea,summary,[contenteditable="true"]')) return;
-    if (target !== document.body && !stage.contains(target)) return;
-    const keys = {ArrowLeft: current - 1, ArrowRight: current + 1, PageUp: current - 1, PageDown: current + 1,
-      ' ': current + 1, Enter: current + 1, Home: 0, End: slides.length - 1};
-    if (!(event.key in keys)) return;
-    event.preventDefault();
-    renderSlide(keys[event.key], true);
+
   });
+  window.LectureNavigation.register({player, stage, navigate: action => {
+    const fromThumbnail = thumbnails.contains(document.activeElement);
+    renderSlide(action === 'first' ? 0 : action === 'last' ? slides.length - 1 : current + action, true);
+    if (fromThumbnail) thumbnails.children[current].focus({preventScroll: true});
+  }});
   renderSlide(0);
 })();

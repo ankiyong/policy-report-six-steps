@@ -32,7 +32,7 @@
     if (keys.some(key => key !== 'mode' && key !== 'process')) return fallback;
     if (params.getAll('process').length > 1 || (params.has('process') && !['body', 'final'].includes(params.get('process')))) return fallback;
     const hash = match[2] || '';
-    if (hash && !/^#(?:common|step-[1-9]|appendix-skill)$/.test(hash)) return fallback;
+    if (hash && !/^#(?:common|step-(?:[1-9]|10)|appendix-skill)$/.test(hash)) return fallback;
     return 'practice.html?mode=instructor' + (params.has('process') ? '&process=' + params.get('process') : '') + hash;
   }
 

@@ -270,3 +270,15 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
 .appendix-card .card-image{object-position:center 42%;filter:saturate(.35) brightness(.7)}
 .appendix-card .card-content{max-width:800px}
 @media(min-width:1100px){.gallery .thumb:nth-child(9),.gallery .thumb:nth-child(10){grid-column:span 6}.gallery .thumb.appendix-card{grid-column:1 / -1;height:220px}}
+
+/* 보고서 활용 10단계와 PDF 원문 프롬프트 */
+.lesson-materials{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap;flex-shrink:0;padding:10px 14px;background:#edf3ef;border:1px solid #d4e2db;border-radius:5px;font-size:11px;color:#3f6657}
+.lesson-materials[hidden]{display:none}.lesson-materials span{font-weight:700}.lesson-materials a,#source-pdf-link{text-decoration:underline;text-underline-offset:3px}
+#source-pdf-link{display:inline-block;font-size:12px;margin-top:7px;color:#285b49}
+#source-text{font-family:inherit;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.9;padding:24px 30px;overflow:auto;min-height:0;flex:1;color:#31483f}
+#source-status{padding:10px 24px;margin:0}
+@media(min-width:1100px){.gallery .thumb:nth-child(9),.gallery .thumb:nth-child(10),.gallery .thumb:nth-child(11){grid-column:span 4}}
+@media(min-width:441px) and (max-width:1099px){.gallery .thumb:nth-child(11){grid-column:1 / -1}}
+@media(max-width:600px){#source-text{padding:18px;font-size:12px}.lesson-materials{font-size:10px;gap:8px 12px;margin-bottom:12px}.view-tabs{overflow-x:auto}.view-tabs button{flex-shrink:0}}
+
+.card-link[href="#step-10"] .card-image{filter:brightness(.55) saturate(.6)}

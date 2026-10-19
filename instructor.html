@@ -4,11 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>.instructor-locked body > :not(.access-noscript){display:none!important}</style>
-  <script src="assets/js/instructor-access.js?v=20261019-nine-stages"></script>
-  <meta name="description" content="사람의 판단과 선택으로 AI와 정책보고서를 작성하는 9단계 강의와 실습 예시">
+  <script src="assets/js/instructor-access.js?v=20261019-card-news"></script>
+  <meta name="description" content="사람의 판단과 선택으로 AI와 정책보고서를 작성하는 9단계 강의, 10단계 한 장 카드뉴스·포스터 만들기와 실습 예시">
   <title>강사 강의실 | AI와 함께 쓰는 정책보고서</title>
   <link rel="stylesheet" href="assets/css/lecture.css?v=20261019-original-slides">
   <script src="assets/js/lecture.js?v=20261019-approved-slides" defer></script>
+  <link rel="stylesheet" href="assets/css/card-news-lecture.css?v=20261019-card-news">
+  <script src="assets/js/card-news-lecture.js?v=20261019-card-news" defer></script>
 </head>
 <body>
   <noscript class="access-noscript"><p>강사용 입장은 JavaScript가 필요합니다. <a href="practice.html">수강생 실습</a> 또는 <a href="index.html">입장 선택</a>으로 이동하세요.</p></noscript>
@@ -25,12 +27,12 @@
     </section>
 
     <section id="lecture" class="lecture-section" aria-labelledby="lecture-heading">
-      <div class="section-heading"><div><p class="eyebrow">01 · MINI LECTURE</p><h2 id="lecture-heading">강의 슬라이드</h2></div><div class="resource-links"><a href="lecture.pdf" target="_blank" rel="noopener">기존 이론 강의 참고자료 <span aria-hidden="true">↗</span></a><a href="lecture.pdf" download="정책보고서_작성_강의안.pdf">기존 PDF 다운로드 <span aria-hidden="true">↓</span></a></div></div>
+      <div class="section-heading"><div><p class="eyebrow">01 · MINI LECTURE</p><h2 id="lecture-heading">강의 슬라이드</h2></div><div class="resource-links"><a href="lecture.pdf?v=20261019-uploaded" target="_blank" rel="noopener">강의 PDF 원본 <span aria-hidden="true">↗</span></a><a href="lecture.pdf?v=20261019-uploaded" download="정책보고서_작성_강의안.pdf">PDF 다운로드 <span aria-hidden="true">↓</span></a></div></div>
       <div id="slide-player" class="slide-player" role="region" aria-label="강의 슬라이드쇼">
         <div class="slide-topline"><span class="slide-label">LECTURE SLIDE</span><h3 id="slide-title">보고서와 기획</h3><span id="slide-count" aria-live="polite" aria-atomic="true">01 / 10</span></div>
         <div id="slide-stage" class="slide-stage" tabindex="0" aria-label="슬라이드 화면. 클릭·터치 또는 Space·Enter로 다음 장, 방향키와 Page Up·Down으로 이전·다음 장을 표시합니다.">
           <img id="slide-image" src="images/lecture-01.webp" alt="1쪽. PART 1. 보고서와 기획" width="1920" height="1080" fetchpriority="high" draggable="false">
-          <p id="slide-error" class="slide-error" hidden>슬라이드 이미지를 불러오지 못했습니다. <a href="lecture.pdf" target="_blank" rel="noopener">PDF 원본을 열어주세요.</a></p>
+          <p id="slide-error" class="slide-error" hidden>슬라이드 이미지를 불러오지 못했습니다. <a href="lecture.pdf?v=20261019-uploaded" target="_blank" rel="noopener">PDF 원본을 열어주세요.</a></p>
         </div>
         <div class="player-controls">
           <div class="slide-navigation"><button id="slide-prev" type="button" class="control-button" disabled aria-label="이전 슬라이드"><span aria-hidden="true">←</span> 이전</button><button id="slide-next" type="button" class="control-button" aria-label="다음 슬라이드">다음 <span aria-hidden="true">→</span></button></div>
@@ -39,15 +41,35 @@
         <p id="player-status" class="player-status" role="status" aria-live="polite">화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막</p>
       </div>
       <details class="slide-overview"><summary>전체 슬라이드 보기 <span>10장</span></summary><div id="slide-thumbnails" class="slide-thumbnails" role="group" aria-label="슬라이드 선택"></div></details>
-      <p class="lecture-note">강의 슬라이드 10장 중 작성 단계 관련 2·3장을 현행 9단계로 업데이트했습니다. 나머지 슬라이드와 PDF는 기존 자료이며, 실습은 현재 9단계 안내를 따릅니다. Claude 스킬 추가는 선택 부록입니다.</p>
-      <noscript><p class="noscript-note">슬라이드쇼를 사용하려면 JavaScript를 켜주세요. <a href="lecture.pdf">기존 이론 참고자료 열기</a>로 강의안을 볼 수 있습니다.</p></noscript>
+      <p class="lecture-note">강의 슬라이드 10장 중 작성 단계 관련 2·3장을 현행 9단계로 업데이트했습니다. 웹 슬라이드는 핵심 내용을 발췌한 구성으로, 새로 교체한 PDF 원본과 페이지 구성이 다릅니다. 보고서 작성은 1~9단계, 완성 보고서의 시각화는 새로 추가한 10단계로 이어집니다. Claude 스킬 추가는 선택 부록입니다.</p>
+      <noscript><p class="noscript-note">슬라이드쇼를 사용하려면 JavaScript를 켜주세요. <a href="lecture.pdf?v=20261019-uploaded">강의 PDF 원본 열기</a>로 강의안을 볼 수 있습니다.</p></noscript>
+    </section>
+
+    <section id="cardnews-lecture" class="lecture-section cardnews-lecture-section" aria-labelledby="cardnews-heading">
+      <div class="section-heading"><div><p class="eyebrow">02 · REPORT VISUALIZATION</p><h2 id="cardnews-heading">보고서를 한 장 카드뉴스·포스터로</h2></div><div class="resource-links"><a href="card-news-lecture.pdf" target="_blank" rel="noopener">강의 원문 33~39쪽 <span aria-hidden="true">↗</span></a><a href="card-news-lecture.pdf" download="보고서_시각화_강의안_33-39쪽.pdf">7쪽 PDF 다운로드 <span aria-hidden="true">↓</span></a></div></div>
+      <p class="cardnews-intro">완성한 보고서에서 핵심 내용을 고르고, 구성과 표현을 선택해 한 장의 포스터로 만듭니다. 원문 강의안 33~39쪽을 그대로 보며 핵심 내용 추출 → 구성 정하기 → 이미지 생성 → 원문과 대조 순서로 진행하세요.</p>
+      <div id="cardnews-player" class="slide-player" role="region" aria-label="보고서 시각화 슬라이드쇼">
+        <div class="slide-topline"><span class="slide-label">REPORT VISUALIZATION</span><h3 id="cardnews-title">보고서를 이미지로 만들기</h3><span id="cardnews-count" aria-live="polite" aria-atomic="true">01 / 07</span></div>
+        <div id="cardnews-stage" class="slide-stage" tabindex="0" aria-label="보고서 시각화 슬라이드 화면. 클릭·터치 또는 Space·Enter로 다음 장, 방향키와 Page Up·Down으로 이전·다음 장을 표시합니다.">
+          <img id="cardnews-image" src="images/card-news-33.webp" alt="원문 33쪽. 보고서를 이미지로 만들기" width="1920" height="1080" loading="lazy" draggable="false">
+          <p id="cardnews-error" class="slide-error" hidden>슬라이드 이미지를 불러오지 못했습니다. <a href="card-news-lecture.pdf" target="_blank" rel="noopener">PDF 원문을 열어주세요.</a></p>
+        </div>
+        <div class="player-controls">
+          <div class="slide-navigation"><button id="cardnews-prev" type="button" class="control-button" disabled aria-label="이전 보고서 시각화 슬라이드"><span aria-hidden="true">←</span> 이전</button><button id="cardnews-next" type="button" class="control-button" aria-label="다음 보고서 시각화 슬라이드">다음 <span aria-hidden="true">→</span></button></div>
+          <div class="playback-controls"><button id="cardnews-fullscreen" type="button" class="control-button" aria-pressed="false"><span aria-hidden="true">⛶</span> 전체 화면</button></div>
+        </div>
+        <p id="cardnews-status" class="player-status" role="status" aria-live="polite">이 화면을 선택한 뒤 방향키로 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막</p>
+      </div>
+      <details class="slide-overview"><summary>시각화 강의 전체 보기 <span>7장 · 원문 33~39쪽</span></summary><div id="cardnews-thumbnails" class="slide-thumbnails" role="group" aria-label="보고서 시각화 슬라이드 선택"></div></details>
+      <div class="cardnews-next-step"><p class="lecture-note">10단계 · 한 장 카드뉴스·포스터 만들기. 원문 강의는 한 장의 포스터 제작을 다룹니다. 슬라이드에서 잘려 보이는 문구도 10단계의 ‘PDF 원문’ 탭에서 전체를 확인·복사할 수 있습니다. 완성 보고서의 근거와 수치를 유지하고, 이미지에 담을 핵심 내용과 표현은 사람이 선택합니다.</p><a class="button secondary" href="practice.html#step-10">10단계 · 한 장 카드뉴스·포스터 만들기 <span aria-hidden="true">→</span></a></div>
+      <noscript><p class="noscript-note"><a href="card-news-lecture.pdf">보고서 시각화 PDF 열기</a>로 강의안을 볼 수 있습니다.</p></noscript>
     </section>
 
     <section id="example" class="example-section" aria-labelledby="example-heading">
-      <div class="section-heading"><div><p class="eyebrow">02 · WORKED EXAMPLE</p><h2 id="example-heading">완성된 예시로 이어가는 실습</h2></div><span class="example-badge">교육용 가상 사례</span></div>
+      <div class="section-heading"><div><p class="eyebrow">03 · WORKED EXAMPLE</p><h2 id="example-heading">완성된 예시로 이어가는 실습</h2></div><span class="example-badge">교육용 가상 사례</span></div>
       <div class="case-card">
         <div class="case-intro"><p class="case-topic">실습 주제</p><h3>신규 청년인턴의<br>첫 업무자료 탐색 개선</h3><p>가상 A기관의 첫 행사 안내문 작성 상황에서 대표 폴더 지정과 권장 양식·예시 표시를 선택합니다. 원문 확인과 대안 비교, 추진계획 선택을 거쳐 양식에 맞춘 원고까지 이어갑니다.</p><div class="case-tags"><span>직접 원문 확인</span><span>대안 비교</span><span>선택과 이유</span></div></div>
-        <div class="case-flow"><ol><li><span class="flow-number">1</span><div><strong>내 생각과 자료 확인</strong><p>관찰한 경험을 적고 가상자료 원문을 직접 확인합니다. 자료의 적용 범위를 함께 점검합니다.</p></div></li><li><span class="flow-number">2</span><div><strong>추천안 비교와 사용자 선택</strong><p>6단계 아이디어 공란의 5개 방안과 7단계 공란의 추진계획 2안을 비교하고 선택·수정 이유를 설명합니다.</p></div></li><li><span class="flow-number">3</span><div><strong>초안·전체 검토·최종안</strong><p>9단계에서 선택한 기획과 채택한 근거를 양식에 반영합니다. 사람의 검토·수정 선택으로 최종안을 완성합니다.</p></div></li><li><span class="flow-number">4</span><div><strong>선택 부록 · Claude 스킬 추가</strong><p>필요하면 스킬 등록과 사용 가능 범위를 확인합니다. 최신 원고와 빈 HWPX 양식으로 실제 파일 작업을 진행할 수 있는지 점검합니다.</p></div></li></ol><p class="example-note">가상 A기관과 G1~G3는 수업용 설정입니다. 입력은 수정할 수 있지만 완성 예시는 자동으로 바뀌지 않습니다. 실제 기관 조사·협의·승인·효과 검증과 구분하세요.</p><div class="case-actions"><a class="button primary" href="practice.html?mode=instructor#step-1">1단계부터 실습 예시 보기 <span aria-hidden="true">→</span></a><a class="button secondary" href="practice.html?mode=instructor&amp;process=final#step-9">최종안 예시 보기</a><a class="button secondary" href="practice.html?mode=instructor#appendix-skill">부록 · Claude 스킬 추가</a></div></div>
+        <div class="case-flow"><ol><li><span class="flow-number">1</span><div><strong>내 생각과 자료 확인</strong><p>관찰한 경험을 적고 가상자료 원문을 직접 확인합니다. 자료의 적용 범위를 함께 점검합니다.</p></div></li><li><span class="flow-number">2</span><div><strong>추천안 비교와 사용자 선택</strong><p>6단계 아이디어 공란의 5개 방안과 7단계 공란의 추진계획 2안을 비교하고 선택·수정 이유를 설명합니다.</p></div></li><li><span class="flow-number">3</span><div><strong>초안·전체 검토·최종안</strong><p>9단계에서 선택한 기획과 채택한 근거를 양식에 반영합니다. 사람의 검토·수정 선택으로 최종안을 완성합니다.</p></div></li><li><span class="flow-number">4</span><div><strong>선택 부록 · Claude 스킬 추가</strong><p>필요하면 스킬 등록과 사용 가능 범위를 확인합니다. 최신 원고와 빈 HWPX 양식으로 실제 파일 작업을 진행할 수 있는지 점검합니다.</p></div></li></ol><p class="example-note">가상 A기관과 G1~G3는 수업용 설정입니다. 입력은 수정할 수 있지만 완성 예시는 자동으로 바뀌지 않습니다. 실제 기관 조사·협의·승인·효과 검증과 구분하세요.</p><div class="case-actions"><a class="button primary" href="practice.html?mode=instructor#step-1">1단계부터 실습 예시 보기 <span aria-hidden="true">→</span></a><a class="button secondary" href="practice.html?mode=instructor&amp;process=final#step-9">최종안 예시 보기</a><a class="button secondary" href="practice.html?mode=instructor#step-10">10단계 포스터 예시 보기</a><a class="button secondary" href="practice.html?mode=instructor#appendix-skill">부록 · Claude 스킬 추가</a></div></div>
       </div>
     </section>
   </main>

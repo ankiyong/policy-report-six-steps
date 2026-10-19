@@ -1,0 +1,6 @@
+.cardnews-lecture-section{margin-top:53px}
+.cardnews-intro{max-width:900px;margin:-2px 0 21px;font-size:13px;line-height:1.85;color:var(--muted);word-break:keep-all}
+.cardnews-next-step{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:15px}
+.cardnews-next-step .lecture-note{margin:0;max-width:730px}
+.cardnews-next-step .button{flex-shrink:0;font-size:12px;gap:12px}
+@media(max-width:700px){.cardnews-lecture-section{margin-top:34px}.cardnews-intro{font-size:12px;margin-bottom:17px}.cardnews-next-step{align-items:stretch;flex-direction:column;gap:15px}.cardnews-next-step .button{width:100%}#cardnews-player .playback-controls{justify-content:flex-end}}

@@ -6,31 +6,32 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>.instructor-locked body > :not(.access-noscript){display:none!important}</style>
-  <script src="assets/js/instructor-access.js?v=20261019-nine-stages"></script>
+  <script src="assets/js/instructor-access.js?v=20261019-card-news"></script>
   <meta name="theme-color" content="#1c2023">
-  <meta name="description" content="사람이 기획·판단하고 AI가 정리·작성하는 정책보고서 9단계 실습과 선택 부록.">
-  <title>정책보고서, 9단계로 완성하기 | AI 실습 프롬프트</title>
-  <link rel="stylesheet" href="assets/css/guide.css?v=20261019-nine-stages">
-  <script src="assets/js/prompts.js?v=20261019-nine-stages" defer></script>
-  <script src="assets/js/writing-guides.js?v=20261019-nine-stages" defer></script>
-  <script src="assets/js/prompt-builder.js?v=20261019-nine-stages" defer></script>
-  <script src="assets/js/instructor-data.js?v=20261019-nine-stages" defer></script>
-  <script src="assets/js/skill-setup.js?v=20261019-nine-stages" defer></script>
-  <script src="assets/js/guide.js?v=20261019-nine-stages" defer></script>
+  <meta name="description" content="정책보고서 작성 9단계와 한 장 카드뉴스·포스터 만들기 10단계 실습.">
+  <title>정책보고서부터 카드뉴스까지 | 10단계 AI 실습</title>
+  <link rel="stylesheet" href="assets/css/guide.css?v=20261019-card-news">
+  <script src="assets/js/prompts.js?v=20261019-card-news" defer></script>
+  <script src="assets/js/writing-guides.js?v=20261019-card-news" defer></script>
+  <script src="assets/js/prompt-builder.js?v=20261019-card-news" defer></script>
+  <script src="assets/js/instructor-data.js?v=20261019-card-news" defer></script>
+  <script src="assets/js/card-news-data.js?v=20261019-card-news" defer></script>
+  <script src="assets/js/skill-setup.js?v=20261019-card-news" defer></script>
+  <script src="assets/js/guide.js?v=20261019-card-news" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">단계 목록으로 바로가기</a>
   <div id="wrapper">
     <header class="intro">
-      <div><p class="eyebrow" id="intro-eyebrow"><span class="green-dot"></span> AI WORKSHOP · NINE-STEP CHAT GUIDE</p>
-      <h1 id="intro-title">정책보고서, <span>9단계로 완성하기.</span></h1></div>
-      <p class="intro-note" id="intro-note">1~8단계는 내가 생각하고 선택합니다.<br><strong>9단계는 AI와 양식에 맞춰 작성·검토합니다.</strong><br>Claude 스킬 추가는 선택 부록입니다.</p>
+      <div><p class="eyebrow" id="intro-eyebrow"><span class="green-dot"></span> AI WORKSHOP · TEN-STEP CHAT GUIDE</p>
+      <h1 id="intro-title">정책보고서부터 <span>카드뉴스까지.</span></h1></div>
+      <p class="intro-note" id="intro-note">1~8단계는 내가 생각하고 선택합니다.<br><strong>9단계는 AI와 양식에 맞춰 작성·검토합니다.</strong><br>10단계는 한 장 카드뉴스·포스터로 만듭니다.</p>
     </header>
     <aside id="instructor-banner" class="instructor-banner" hidden><div><strong>강사용 · 완성 실습 예시</strong><p id="instructor-notice"></p></div><a href="instructor.html">← 강의 슬라이드로</a></aside>
-    <main id="main" class="gallery" aria-label="공통 원칙과 정책보고서 9단계, 선택 부록"></main>
+    <main id="main" class="gallery" aria-label="공통 원칙과 보고서·카드뉴스 10단계, 선택 부록"></main>
     <noscript><div class="noscript">단계별 창을 열려면 JavaScript를 켜주세요. <a href="prompts-student.txt">전체 프롬프트 읽기</a></div></noscript>
     <footer id="header" class="bottom-bar">
-      <a class="brand" href="./index.html"><strong>POLICY REPORT</strong><span id="page-brand-count">9단계 실습 + 부록</span></a>
+      <a class="brand" href="./index.html"><strong>POLICY REPORT</strong><span id="page-brand-count">10단계 실습 + 부록</span></a>
       <nav aria-label="자료 메뉴"><a href="index.html">입장 선택</a><a id="prompts-download" href="prompts-student.txt" download>전체 프롬프트 <span aria-hidden="true">↓</span></a><button type="button" id="help-button">사용 안내 <span class="info-icon" aria-hidden="true">i</span></button><button type="button" id="instructor-logout" class="instructor-only" hidden>강사용 종료</button></nav>
     </footer>
   </div>
@@ -42,6 +43,11 @@
         <div class="dialog-scroll" id="dialog-scroll">
           <div class="view-tabs" id="view-tabs" role="tablist" aria-label="단계 진행 화면"></div>
           <div class="prompt-tabs process-tabs" id="prompt-tabs" role="group" aria-label="단계별 진행 과정"></div>
+<nav id="lesson-materials" class="lesson-materials" aria-label="이 단계 강의 자료" hidden><span>원문 33~39쪽 · 7장</span><a href="card-news-lecture.pdf" target="_blank" rel="noopener">강의 PDF 보기 ↗</a><a href="card-news-lecture.pdf" download>강의 PDF 내려받기</a><a href="card-news-prompts.txt" download>원문 프롬프트 내려받기</a></nav>
+<section id="source-panel" class="example-panel source-panel" role="tabpanel" aria-labelledby="view-source-tab" hidden>
+<div class="example-toolbar"><div><h3 id="source-title" tabindex="-1">PDF 원문 프롬프트</h3><p id="source-note"></p><a id="source-pdf-link" target="_blank" rel="noopener">해당 강의 페이지 보기 ↗</a></div><button type="button" id="copy-source" class="copy-button">원문 프롬프트 복사</button></div>
+<pre id="source-text" tabindex="0" aria-label="PDF에서 추출한 원문 프롬프트"></pre>
+<p id="source-status" class="copy-status" role="status" aria-live="polite"></p></section>
           <section id="setup-panel" class="setup-panel" role="tabpanel" aria-labelledby="view-setup-tab" hidden>
             <div class="setup-scroll">
               <header class="setup-heading"><p class="modal-kicker">CLAUDE · SKILL SETUP</p><h3 id="setup-title" tabindex="-1"></h3><p id="setup-description"></p></header>
@@ -110,7 +116,7 @@
 
   <dialog id="help-dialog" aria-labelledby="help-title">
     <header class="help-heading"><div><p class="modal-kicker">HOW TO USE</p><h2 id="help-title">이렇게 사용하세요.</h2></div><button type="button" class="close-button" id="close-help" aria-label="사용 안내 닫기">×</button></header>
-    <div class="help-content"><ol><li><strong>먼저 내 생각을 적기</strong><p>작성 요령과 예시를 읽고 내 경험·판단을 먼저 적습니다. 새 입력은 최대 3개와 선택 항목 “그 외 기타 사항”입니다. 예시는 입력 방법이며 그대로 정답으로 옮길 필요가 없습니다.</p></li><li><strong>같은 AI 채팅에서 1~9단계 이어가기</strong><p>프롬프트를 생성·복사해 같은 대화에 붙여 넣습니다. 공통 원칙과 단계별 점검 질문이 함께 들어갑니다. 새 채팅에서는 최신 기획·근거 기록과 원문을 함께 전달해야 합니다.</p></li><li><strong>1단계는 경험, 2단계는 주제 선택</strong><p>관심 주제·선정 이유·직접 본 현상을 적으면 AI가 정리합니다. 2단계는 그 기록을 이어받으므로 다시 입력하지 않습니다. 주제안과 범위를 선택·수정하고 이유를 말한 뒤 명확한 주제명·설명을 남깁니다.</p></li><li><strong>3단계 추천 뒤 4단계 직접 읽기</strong><p>추천 자료는 검토 전입니다. 원문을 열고 직접 읽은 위치·자기 요약·주장과 연결을 적습니다. AI와 대조한 뒤 채택·수정·보류와 이유를 정합니다. 자료마다 같은 프롬프트를 반복하며 실제 파일은 AI 채팅에 직접 첨부합니다.</p></li><li><strong>5단계 문제·배경, 6단계 개선방안</strong><p>채택한 근거로 핵심 문제를 고릅니다. 개선 아이디어가 있으면 자신의 안을 포함해 비교하고, 없으면 첫 칸을 비워 5개를 추천받습니다. 기대하는 변화와 선택 기준은 먼저 적고, 선택·수정·조합은 직접 결정합니다.</p></li><li><strong>7단계는 순서·역할·시기</strong><p>어떤 순서로 할지, 누가 무엇을 맡으면 좋을지, 언제 준비하고 시험할지 아는 만큼만 적습니다. 모두 공란이면 같은 개선방안의 추진계획 2안, 일부 공란이면 빈 부분만 추천받습니다. AI의 제안을 고른 뒤에도 실제 담당자 협의·승인은 별도로 확인합니다.</p></li><li><strong>8단계 효과와 확인 방법</strong><p>무엇을 만들었는지와 대상에게 어떤 변화가 생겼는지를 구분합니다. 근거 없는 개선율을 정하지 않고 측정할 자료·시점·담당·한계를 검토합니다. 측정 업무를 추진계획에 연결하고 전체 점검 상태를 확인합니다.</p></li><li><strong>9단계 초안 → 사람의 검토 → 최종안</strong><p>최신 기획·채택한 근거와 실제 양식을 AI 채팅에 제공합니다. 초안에 내 판단과 다른 내용, 근거 없는 수치·원인·담당·일정이 들어갔는지 읽고 수정할 내용과 이유를 적습니다. 실제 양식 파일의 표·쪽 나눔·분량·출처도 직접 확인합니다.</p></li><li><strong>내 결정과 이유를 기록하기</strong><p>AI 답변을 읽고 “내 결정 기록”에서 선택·수정·조합·보류한 내용과 이유를 남깁니다. 이 문구를 같은 AI 채팅에 보내 기획 기록을 갱신합니다. AI가 추천했거나 프롬프트를 복사했다는 이유만으로 단계가 완료되는 것은 아닙니다.</p></li><li><strong>스킬 추가는 선택 부록</strong><p>Claude에 hwpx-writer 스킬을 추가하는 기존 안내는 부록에 있습니다. 이름·설명·지침을 복사해 등록한 뒤 필요한 파일과 실제 사용 가능 범위를 확인합니다. 사이트가 스킬을 설치하거나 문서를 생성하지는 않습니다.</p></li></ol><div class="help-example"><strong>내 결정 예시</strong><p>“대표 폴더 지정과 권장본 표시를 조합하겠습니다. 기존 자료를 활용해 작게 시작하고 싶기 때문입니다. 실제 권한·갱신 담당·작업시간은 확인 필요로 남깁니다.”</p></div><p class="help-small">점검 상태는 반영 / 추가 결정 필요 / 자료 확인 필요 / 해당 없음과 이유로 기록합니다. 기획에 반영했다는 것과 실제 원문 검증·기관 승인 완료는 다릅니다.</p><p class="help-small">입력은 현재 페이지 안에서만 유지되며 새로고침·닫기 시 초기화됩니다. 서버로 전송하거나 AI 답변을 직접 생성하지 않습니다. 다운로드는 입력 전 기본 템플릿입니다. 강사용 예시는 가상 A기관과 가상자료로 구성한 사전 작성 자료입니다.</p><div class="credits">Design adapted from <a href="https://html5up.net/multiverse" target="_blank" rel="noopener noreferrer">Multiverse · HTML5 UP</a> · <a href="LICENSE.txt" target="_blank" rel="noopener">CC BY 3.0</a><br>단계별 일러스트: AI 생성 이미지. 항목별 입력·프롬프트 생성·결정 기록·복사 기능을 추가했습니다.</div></div>
+    <div class="help-content"><ol><li><strong>먼저 내 생각을 적기</strong><p>작성 요령과 예시를 읽고 내 경험·판단을 먼저 적습니다. 새 입력은 최대 3개와 선택 항목 “그 외 기타 사항”입니다. 예시는 입력 방법이며 그대로 정답으로 옮길 필요가 없습니다.</p></li><li><strong>같은 AI 채팅에서 1~10단계 이어가기</strong><p>프롬프트를 생성·복사해 같은 대화에 붙여 넣습니다. 보고서 1~9단계에는 공통 원칙과 점검 질문이, 10단계에는 과정별 확인 사항이 들어갑니다. 새 채팅에서는 최신 기획·근거 기록과 원문을 함께 전달해야 합니다.</p></li><li><strong>1단계는 경험, 2단계는 주제 선택</strong><p>관심 주제·선정 이유·직접 본 현상을 적으면 AI가 정리합니다. 2단계는 그 기록을 이어받으므로 다시 입력하지 않습니다. 주제안과 범위를 선택·수정하고 이유를 말한 뒤 명확한 주제명·설명을 남깁니다.</p></li><li><strong>3단계 추천 뒤 4단계 직접 읽기</strong><p>추천 자료는 검토 전입니다. 원문을 열고 직접 읽은 위치·자기 요약·주장과 연결을 적습니다. AI와 대조한 뒤 채택·수정·보류와 이유를 정합니다. 자료마다 같은 프롬프트를 반복하며 실제 파일은 AI 채팅에 직접 첨부합니다.</p></li><li><strong>5단계 문제·배경, 6단계 개선방안</strong><p>채택한 근거로 핵심 문제를 고릅니다. 개선 아이디어가 있으면 자신의 안을 포함해 비교하고, 없으면 첫 칸을 비워 5개를 추천받습니다. 기대하는 변화와 선택 기준은 먼저 적고, 선택·수정·조합은 직접 결정합니다.</p></li><li><strong>7단계는 순서·역할·시기</strong><p>어떤 순서로 할지, 누가 무엇을 맡으면 좋을지, 언제 준비하고 시험할지 아는 만큼만 적습니다. 모두 공란이면 같은 개선방안의 추진계획 2안, 일부 공란이면 빈 부분만 추천받습니다. AI의 제안을 고른 뒤에도 실제 담당자 협의·승인은 별도로 확인합니다.</p></li><li><strong>8단계 효과와 확인 방법</strong><p>무엇을 만들었는지와 대상에게 어떤 변화가 생겼는지를 구분합니다. 근거 없는 개선율을 정하지 않고 측정할 자료·시점·담당·한계를 검토합니다. 측정 업무를 추진계획에 연결하고 전체 점검 상태를 확인합니다.</p></li><li><strong>9단계 초안 → 사람의 검토 → 최종안</strong><p>최신 기획·채택한 근거와 실제 양식을 AI 채팅에 제공합니다. 초안에 내 판단과 다른 내용, 근거 없는 수치·원인·담당·일정이 들어갔는지 읽고 수정할 내용과 이유를 적습니다. 실제 양식 파일의 표·쪽 나눔·분량·출처도 직접 확인합니다.</p></li><li><strong>10단계 한 장 카드뉴스·포스터 만들기</strong><p>핵심 내용 추출 → 구성 정하기 → 이미지 생성 → 원문과 대조 순서로 진행합니다. 구성에서는 대상·제안·독자가 결정할 사항 3개를 적고 분위기는 기타 사항에 적습니다. 제목·문구·구성을 직접 확정한 뒤 이미지를 만들고 원본 보고서와 비교합니다. “PDF 원문” 탭에서는 강의안 36~39쪽 프롬프트를 그대로 복사할 수 있습니다.</p></li><li><strong>내 결정과 이유를 기록하기</strong><p>AI 답변을 읽고 “내 결정 기록”에서 선택·수정·조합·보류한 내용과 이유를 남깁니다. 이 문구를 같은 AI 채팅에 보내 기획 기록을 갱신합니다. AI가 추천했거나 프롬프트를 복사했다는 이유만으로 단계가 완료되는 것은 아닙니다.</p></li><li><strong>스킬 추가는 선택 부록</strong><p>Claude에 hwpx-writer 스킬을 추가하는 기존 안내는 부록에 있습니다. 이름·설명·지침을 복사해 등록한 뒤 필요한 파일과 실제 사용 가능 범위를 확인합니다. 사이트가 스킬을 설치하거나 문서를 생성하지는 않습니다.</p></li></ol><div class="help-example"><strong>내 결정 예시</strong><p>“대표 폴더 지정과 권장본 표시를 조합하겠습니다. 기존 자료를 활용해 작게 시작하고 싶기 때문입니다. 실제 권한·갱신 담당·작업시간은 확인 필요로 남깁니다.”</p></div><p class="help-small">점검 상태는 반영 / 추가 결정 필요 / 자료 확인 필요 / 해당 없음과 이유로 기록합니다. 기획에 반영했다는 것과 실제 원문 검증·기관 승인 완료는 다릅니다.</p><p class="help-small">입력은 현재 페이지 안에서만 유지되며 새로고침·닫기 시 초기화됩니다. 서버로 전송하거나 AI 답변을 직접 생성하지 않습니다. 다운로드는 입력 전 기본 템플릿입니다. 강사용 예시는 가상 A기관과 가상자료로 구성한 사전 작성 자료입니다.</p><div class="credits">Design adapted from <a href="https://html5up.net/multiverse" target="_blank" rel="noopener noreferrer">Multiverse · HTML5 UP</a> · <a href="LICENSE.txt" target="_blank" rel="noopener">CC BY 3.0</a><br>단계별 일러스트: AI 생성 이미지. 항목별 입력·프롬프트 생성·결정 기록·복사 기능을 추가했습니다.</div></div>
   </dialog>
 </body>
 </html>

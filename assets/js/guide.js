@@ -19,12 +19,12 @@
   const exampleScrolls = new Map();
   document.body.classList.toggle('is-instructor', !!instructor);
   if (instructor) {
-    document.title = '정책보고서, 9단계로 완성하기 | 강사용 AI 실습 프롬프트';
-    $('intro-title').innerHTML = '정책보고서, <span>9단계로 완성하기.</span>';
-    $('intro-note').innerHTML = '1~8단계는 사람이 생각하고 선택합니다.<br><strong>9단계는 AI와 양식에 맞춰 작성·검토합니다.</strong><br>Claude 스킬 추가는 선택 부록입니다.';
-    $('intro-eyebrow').innerHTML = '<span class="green-dot"></span> AI WORKSHOP · NINE-STEP CHAT GUIDE';
-    $('page-brand-count').textContent = '9단계 실습 + 부록';
-    $('main').setAttribute('aria-label', '공통 원칙과 정책보고서 9단계, 선택 부록');
+    document.title = '정책보고서부터 카드뉴스까지 | 강사용 10단계 실습';
+    $('intro-title').innerHTML = '정책보고서부터 <span>카드뉴스까지.</span>';
+    $('intro-note').innerHTML = '1~8단계는 사람이 생각하고 선택합니다.<br><strong>9단계는 AI와 양식에 맞춰 작성·검토합니다.</strong><br>10단계는 한 장 카드뉴스·포스터로 만듭니다.';
+    $('intro-eyebrow').innerHTML = '<span class="green-dot"></span> AI WORKSHOP · TEN-STEP CHAT GUIDE';
+    $('page-brand-count').textContent = '10단계 실습 + 부록';
+    $('main').setAttribute('aria-label', '공통 원칙과 보고서·카드뉴스 10단계, 선택 부록');
     $('prompts-download').href = 'prompts.txt';
     document.querySelectorAll('.instructor-only').forEach(element => { element.hidden = false; });
     $('instructor-logout').hidden = false;
@@ -123,11 +123,11 @@
     $('prompt-form').hidden = draft.fields.length === 0;
     $('prompt-panel').classList.toggle('is-readonly', draft.fields.length === 0);
     const prompt = steps[active].prompts[activePrompt];
-    $('prompt-instruction').textContent = prompt.instruction || (prompt.kind === 'main'
+    $('prompt-instruction').textContent = prompt.instruction || (prompt.kind?.startsWith('cardnews-') ? 'PDF 강의안을 바탕으로 정리한 실습용 프롬프트 · 원문은 PDF 원문 탭에서 복사' : prompt.kind === 'main'
       ? '내 정보 입력 → 프롬프트 생성 → 복사 · 공통 지침 자동 포함'
       : prompt.kind === 'decision'
         ? 'AI 답변을 검토한 뒤 작성 → 진행 중인 채팅에 붙여 넣기 → 결과 요약 갱신'
-        : '모든 단계 프롬프트에 자동으로 포함되는 공통 지침입니다.');
+        : '보고서 작성 1~9단계에 포함되는 공통 지침입니다.');
     const preparations = prompt.preparations || steps[active].preparations || [];
     $('preparation-panel').hidden = prompt.kind === 'decision' || preparations.length === 0;
     $('preparation-panel').open = false;
@@ -230,7 +230,7 @@
       guideScrolls.set(prompt.id, { guide: $('guide-scroll').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
     } else if (['example', 'decision-example'].includes(activeView)) {
       exampleScrolls.set(prompt.id, { text: $('example-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
-    } else if (activeView !== 'setup') {
+    } else if (!['setup', 'source'].includes(activeView)) {
       currentDraft().scroll = { input: $('input-scroll').scrollTop || 0, output: $('prompt-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 };
     }
   }
@@ -270,13 +270,21 @@
     activePrompt = ['decision', 'decision-example'].includes(activeView) ? decisionIndex : activeInputPrompt;
     const prompt = steps[active].prompts[activePrompt];
     const isWorkflow = prompt.kind === 'document-workflow';
+    if (activeView === 'source' && !prompt.sourceText) activeView = 'input';
+    $('source-panel').hidden = activeView !== 'source';
+    $('source-title').textContent = 'PDF 원문 프롬프트 · ' + (prompt.sourcePage || '') + '쪽';
+    $('source-note').textContent = prompt.sourceNote ? '실습용 프롬프트의 보완 사항: ' + prompt.sourceNote : '';
+    $('source-text').textContent = prompt.sourceText || '';
+    $('source-pdf-link').href = prompt.sourceUrl || 'card-news-lecture.pdf';
+    $('source-status').textContent = '';
+    $('copy-source').disabled = !prompt.sourceText;
     $('start-writing').innerHTML = isWorkflow ? '프롬프트 확인하기 <span aria-hidden="true">→</span>' : '이해했어요, 입력 시작하기 <span aria-hidden="true">→</span>';
     $('prompt-title').textContent = prompt.title;
     renderFields();
     updateResult();
     renderGuide();
     $('guide-panel').hidden = activeView !== 'guide';
-    $('prompt-panel').hidden = activeView === 'guide' || ['example', 'decision-example'].includes(activeView) || activeView === 'setup';
+    $('prompt-panel').hidden = activeView === 'guide' || ['example', 'decision-example'].includes(activeView) || activeView === 'setup' || activeView === 'source';
     $('example-panel').hidden = !['example', 'decision-example'].includes(activeView);
     $('example-panel').setAttribute('aria-labelledby', activeView === 'decision-example' ? 'view-decision-example-tab' : 'view-example-tab');
     $('setup-panel').hidden = activeView !== 'setup';
@@ -357,7 +365,7 @@
       const processIndex = step.prompts.findIndex(prompt => prompt.kind === initialProcess);
       if (processIndex >= 0) activeInputPrompt = activePrompt = processIndex;
     }
-    $('dialog-kicker').textContent = index === 0 ? '공통 원칙 · 모든 단계에 자동 포함' : step.isAppendix ? 'APPENDIX · 선택 부록' : `STEP ${step.number} / ${totalSteps}`;
+    $('dialog-kicker').textContent = index === 0 ? '공통 원칙 · 보고서 작성 1~9단계에 포함' : step.isAppendix ? 'APPENDIX · 선택 부록' : `STEP ${step.number} / ${totalSteps}`;
     $('dialog-title').textContent = step.title;
     $('dialog-description').textContent = step.subtitle;
     $('dialog-decision').textContent = step.decision;
@@ -368,8 +376,10 @@
     $('view-tabs').replaceChildren();
     const isWorkflow = step.prompts[0].kind === 'document-workflow';
     const isSetup = step.prompts[0].kind === 'skill-setup';
+    $('lesson-materials').hidden = !step.prompts.some(prompt => prompt.sourceText);
     const views = isSetup ? [['setup', '스킬 추가 안내'], ['input', '확인 프롬프트']]
       : [['guide', '작성 요령'], ['input', isWorkflow ? '프롬프트' : '입력·프롬프트']];
+    if (step.prompts.some(prompt => prompt.sourceText)) views.push(['source', 'PDF 원문']);
     if (step.prompts.some(prompt => prompt.kind === 'decision')) views.push(['decision', '내 결정 기록']);
     if (instructor && !isSetup) {
       views.push(['example', isWorkflow ? '진행 예시' : '응답 예시']);
@@ -380,7 +390,7 @@
       const tab = create('button', '', title);
       tab.id = `view-${view}-tab`; tab.type = 'button';
       tab.setAttribute('role', 'tab');
-      tab.setAttribute('aria-controls', view === 'setup' ? 'setup-panel' : view === 'guide' ? 'guide-panel' : ['example', 'decision-example'].includes(view) ? 'example-panel' : 'prompt-panel');
+      tab.setAttribute('aria-controls', view === 'source' ? 'source-panel' : view === 'setup' ? 'setup-panel' : view === 'guide' ? 'guide-panel' : ['example', 'decision-example'].includes(view) ? 'example-panel' : 'prompt-panel');
       tab.addEventListener('click', () => showView(view));
       tab.addEventListener('keydown', event => {
         let target;
@@ -398,7 +408,7 @@
     if (processes.length > 1) processes.forEach((prompt, i) => {
       const tab = create('button', '', prompt.title);
       tab.type = 'button';tab.id = `tab-${step.id}-${i}`;
-      tab.setAttribute('aria-controls', instructor ? 'guide-panel prompt-panel example-panel' : 'guide-panel prompt-panel');
+      tab.setAttribute('aria-controls', instructor ? 'guide-panel prompt-panel example-panel source-panel' : 'guide-panel prompt-panel source-panel');
       tab.addEventListener('click', () => { activeInputPrompt = i; showView(activeView); });
       $('prompt-tabs').append(tab);
     });
@@ -431,6 +441,24 @@
     try {success = document.execCommand('copy');} catch (_) { /* Manual selection below. */ }
     field.remove();$(buttonId).focus({preventScroll:true});return success;
   }
+  $('copy-source').addEventListener('click', async () => {
+    if (activeView !== 'source') return;
+    const text = $('source-text').textContent;
+    const revision = viewRevision;
+    $('copy-source').disabled = true;
+    let success = false;
+    if (window.isSecureContext && navigator.clipboard) {
+      try { await navigator.clipboard.writeText(text); success = true; } catch (_) { /* Use selection fallback. */ }
+    }
+    if (revision !== viewRevision || !modal.open) return;
+    $('copy-source').disabled = false;
+    if (!success) success = fallbackCopy(text, 'copy-source');
+    $('source-status').textContent = success ? '강의안 원문 프롬프트를 복사했습니다. 입력할 부분과 첨부 자료를 확인해 사용하세요.' : '자동 복사가 제한되어 내용을 선택했습니다. Ctrl+C 또는 ⌘C로 복사하세요.';
+    if (!success) {
+      const range = document.createRange(); range.selectNodeContents($('source-text'));
+      const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+    }
+  });
   $('copy-example').addEventListener('click', async () => {
     if (!instructor || !['example', 'decision-example'].includes(activeView)) return;
     const text = $('example-text').textContent;

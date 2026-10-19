@@ -40,8 +40,8 @@
     "PART 1. 보고서와 기획."
   ],
   [
-    "정책보고서 작성 7단계",
-    "첨부 PDF 원문: 주제 및 문제 설정, 자료 수집 및 분석, 개선방안 도출, 실행 가능성 검토, 추진 계획 수립, 보고서 작성, 최종 점검."
+    "정책보고서 작성 9단계",
+    "내 문제의식 기록, 정책보고서 주제 확정, 자료 탐색과 읽을 자료 선택, 원문 확인과 근거 기록, 핵심 문제와 배경 구성, 개선방안 결정, 추진계획 결정, 기대효과와 확인 방법 결정, 초안 작성·검토·최종안. 1~8단계는 기획·선택, 9단계는 작성·검토·최종안입니다."
   ],
   [
     "AI와 보고서를 쓸수록 기획이 더 중요하다",
@@ -88,7 +88,7 @@
   let timer = null;
   let expanded = false;
   let previousFocus = null;
-  const imagePath = index => 'images/lecture-uploaded-' + String(index + 1).padStart(2, '0') + '.webp';
+  const imagePath = index => index === 9 ? 'images/lecture-02-nine-stages.png' : 'images/lecture-uploaded-' + String(index + 1).padStart(2, '0') + '.webp';
   const keyboardHint = '화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막';
 
   function stopAutoplay(message) {

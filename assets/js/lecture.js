@@ -4,8 +4,8 @@
   document.getElementById('instructor-logout')?.addEventListener('click', () => window.InstructorAccess.logout());
   const slides = [
     ['보고서와 기획', 'PART 1. 보고서와 기획'],
-    ['정책보고서 작성 7단계', '주제·문제 설정, 자료 수집·분석, 개선방안 도출, 실행 가능성 검토, 추진계획 수립, 보고서 작성, 최종 점검'],
-    ['AI와 보고서를 쓸수록 기획이 더 중요하다', '1~5단계에서 정한 목적·근거·대안·실행 조건이 AI 초안의 기준이 됩니다. AI는 주어진 방향을 초안으로 구체화하고, 사람은 방향과 판단 기준을 더 명확하게 정합니다.'],
+    ['정책보고서 작성 9단계', '1 내 문제의식 기록, 2 정책보고서 주제 확정, 3 자료 탐색과 읽을 자료 선택, 4 원문 확인과 근거 기록, 5 핵심 문제와 배경 구성, 6 개선방안 결정, 7 추진계획 결정, 8 기대효과와 확인 방법 결정, 9 초안 작성·검토·최종안. 1~8단계는 기획·선택, 9단계는 초안 작성·검토·최종안입니다.'],
+    ['AI와 보고서를 쓸수록 기획이 더 중요하다', '1~8단계에서 정한 목적·근거·선택이 9단계 보고서의 기준이 됩니다. 사람은 생각·근거 확인·선택을, AI는 정리·질문·대안 비교를 맡습니다. 9단계는 AI 초안 작성 → 사람의 근거·판단 검토 → AI 수정·최종안 작성 순서이며 최종 확인은 사람이 합니다.'],
     ['AI와 함께 기획하기', 'PART 2. AI와 함께 기획하기'],
     ['AI 활용의 출발점은 기획', '목적과 조건, 완료 기준을 먼저 정합니다. 기획, 자료 준비, 초안, 검토·보완의 순서에서 사람은 목적·조건 설정, 근거 확인과 최종 판단을 맡습니다.'],
     ['같은 주제, 달라지는 결과물', '업무 인계·인수 개선이라는 같은 주제도 부서장 보고, 실무자 안내, 청년인턴 교육에 따라 필요한 내용과 형식이 달라집니다.'],
@@ -26,7 +26,8 @@
   let timer = null;
   let expanded = false;
   let previousFocus = null;
-  const imagePath = index => `images/lecture-${String(index + 1).padStart(2, '0')}.webp`;
+  const updatedSlideImages = {1: 'images/lecture-02-nine-stages.png', 2: 'images/lecture-03-nine-stages.png'};
+  const imagePath = index => updatedSlideImages[index] || `images/lecture-${String(index + 1).padStart(2, '0')}.webp`;
   const keyboardHint = '화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막';
 
   function stopAutoplay(message) {

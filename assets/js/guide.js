@@ -5,13 +5,7 @@
   if (requestedInstructor && !window.InstructorAccess?.require()) return;
   const instructor = requestedInstructor ? window.INSTRUCTOR_CASE : null;
   const setup = window.SKILL_SETUP;
-  const steps = window.PROMPT_STEPS.map(step => !instructor && step.id === 'step-7' ? {
-    ...step, audience: 'student', title: setup.title, subtitle: setup.subtitle,
-    description: setup.description, decision: '스킬 이름·설명·본문을 확인하고 저장한 뒤 사용 가능 여부를 확인합니다.',
-    badge: 'Claude · 스킬 추가', eyebrow: 'ADD YOUR SKILL', image: 'images/steps/common.webp',
-    preparations: [], prompts: [{id: 'step-7-setup', kind: 'skill-setup', title: '스킬 등록 확인 프롬프트',
-      text: setup.verificationPrompt, instruction: '스킬을 저장하고 켠 뒤 Claude 대화에서 사용 가능 여부를 확인하세요.'}]
-  } : step);
+  const steps = window.PROMPT_STEPS;
   const $ = id => document.getElementById(id);
   const modal = $('prompt-dialog');
   const help = $('help-dialog');
@@ -25,12 +19,12 @@
   const exampleScrolls = new Map();
   document.body.classList.toggle('is-instructor', !!instructor);
   if (instructor) {
-    document.title = '정책보고서, 7단계로 완성하기 | 강사용 AI 실습 프롬프트';
-    $('intro-title').innerHTML = '정책보고서, <span>7단계로 완성하기.</span>';
-    $('intro-note').innerHTML = '1~6단계는 하나의 AI 채팅에서 초안을 작성합니다.<br><strong>7단계는 Claude에서 첨부 양식에 작성합니다.</strong>';
-    $('intro-eyebrow').innerHTML = '<span class="green-dot"></span> AI WORKSHOP · SEVEN-STEP CHAT GUIDE';
-    $('page-brand-count').textContent = '7단계 채팅 가이드';
-    $('main').setAttribute('aria-label', '공통 지침과 보고서 작성 7단계');
+    document.title = '정책보고서, 9단계로 완성하기 | 강사용 AI 실습 프롬프트';
+    $('intro-title').innerHTML = '정책보고서, <span>9단계로 완성하기.</span>';
+    $('intro-note').innerHTML = '1~8단계는 사람이 생각하고 선택합니다.<br><strong>9단계는 AI와 양식에 맞춰 작성·검토합니다.</strong><br>Claude 스킬 추가는 선택 부록입니다.';
+    $('intro-eyebrow').innerHTML = '<span class="green-dot"></span> AI WORKSHOP · NINE-STEP CHAT GUIDE';
+    $('page-brand-count').textContent = '9단계 실습 + 부록';
+    $('main').setAttribute('aria-label', '공통 원칙과 정책보고서 9단계, 선택 부록');
     $('prompts-download').href = 'prompts.txt';
     document.querySelectorAll('.instructor-only').forEach(element => { element.hidden = false; });
     $('instructor-logout').hidden = false;
@@ -66,17 +60,17 @@
     link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
     return link;
   }));
-  const totalSteps = String(steps.length - 1).padStart(2, '0');
+  const totalSteps = String(steps.filter(step => /^step-\d+$/.test(step.id)).length).padStart(2, '0');
   steps.forEach((step, index) => {
-    const article = create('article', 'thumb');
+    const article = create('article', step.isAppendix ? 'thumb appendix-card' : 'thumb');
     const link = create('a', 'card-link');
     link.href = `#${step.id}`;
-    link.setAttribute('aria-label', `${index === 0 ? '시작하기' : index + '단계'}, ${step.title} 프롬프트 열기`);
+    link.setAttribute('aria-label', `${index === 0 ? '시작하기' : step.isAppendix ? '선택 부록' : Number(step.number) + '단계'}, ${step.title} 프롬프트 열기`);
     const img = create('img', 'card-image');
     img.src = imagePath(index); img.alt = ''; img.decoding = 'async';
     img.loading = index < 4 ? 'eager' : 'lazy';
     const top = create('div', 'card-top');
-    top.append(create('span', 'card-step', index === 0 ? 'START · 00' : `STEP ${step.number}`));
+    top.append(create('span', 'card-step', index === 0 ? 'START · 00' : step.isAppendix ? 'APPENDIX · 선택' : `STEP ${step.number}`));
     if (index === 0) top.append(create('span', 'prompt-count', '먼저 읽기'));
     else if (step.badge || step.prompts.length > 1) top.append(create('span', 'prompt-count', step.badge || '단계 · 내 결정'));
     const content = create('div', 'card-content');
@@ -92,11 +86,11 @@
     const prompt = steps[active].prompts[activePrompt];
     const key = `${steps[active].id}:${prompt.id}`;
     if (!drafts.has(key)) {
-      const example = instructor?.prompts[prompt.id];
+      const example = instructor?.prompts?.[prompt.id];
       const recordCount = example?.records?.length || 1;
       const template = prompt.repeatSection ? builder.expandRepeatSection(prompt.text, recordCount, prompt.repeatSection) : prompt.text;
       const fields = builder.getFields(template);
-      const values = fields.map(field => example ? (prompt.repeatSection && field.section === prompt.repeatSection ? example.records?.[field.recordIndex]?.[field.label] : example.values[field.label]) || '' : '');
+      const values = fields.map(field => example ? (prompt.repeatSection && field.section === prompt.repeatSection ? example.records?.[field.recordIndex]?.[field.label] : example.values?.[field.label]) || '' : '');
       drafts.set(key, { template, recordCount, fields, values, result: example ? builder.build(template, values) : null, hasGenerated: !!example, invalid: new Set(), message: example ? '교육용 입력 예시가 채워져 있습니다. 그대로 복사하거나 수정 후 다시 생성하세요.' : '', messageError: false });
     }
     return drafts.get(key);
@@ -117,7 +111,7 @@
     $('copy-prompt').disabled = !ready;
     $('prompt-text').textContent = draft.result === null ? draft.template : draft.result;
     $('output-title').textContent = !hasFields ? '프롬프트' : ready ? '02 · 완성된 프롬프트' : '02 · 기본 템플릿';
-    $('output-hint').textContent = !hasFields ? '그대로 복사해 AI 대화에 붙여 넣으세요.' : ready ? '입력한 내용이 반영되었습니다. 확인 후 복사하세요.' : '입력 항목을 채우고 프롬프트를 생성하면 복사할 수 있습니다.';
+    $('output-hint').textContent = !hasFields ? '그대로 복사해 AI 대화에 붙여 넣으세요.' : ready ? '입력한 내용이 반영되었습니다. 확인 후 복사하세요.' : '필수 항목을 확인하고 생성하세요. 선택 항목은 비워 둘 수 있습니다.';
     $('input-progress').textContent = `${draft.values.filter(value => value.trim()).length} / ${draft.fields.length} 항목 입력`;
     $('generation-status').textContent = draft.message;
     $('generation-status').classList.toggle('is-error', draft.messageError);
@@ -140,9 +134,7 @@
     $('preparation-title').textContent = `준비할 자료·정보 (${preparations.length})`;
     $('preparation-list').replaceChildren(...preparations.map(item => create('li', '', item)));
     $('add-record').hidden = !prompt.repeatSection;
-    $('input-help').textContent = prompt.repeatSection
-      ? '자료별로 출처와 내가 분석한 내용을 입력하세요. 원문은 AI 채팅에 직접 첨부하면 발행정보를 AI가 확인합니다. 자료가 여러 개면 ‘자료 추가’를 누르세요. 분석을 비우면 ‘사용자 분석 미입력’으로 표시합니다.'
-      : '각 항목을 입력하세요. 아직 모르면 ‘확인 필요’, 해당하지 않으면 ‘해당 없음’을 적어주세요.';
+    $('input-help').textContent = prompt.inputHelp || '필수 항목에 내 생각을 적으세요. 선택 항목은 비워 둘 수 있습니다.';
     const recordContainers = new Map();
     let lastSection = '';
     draft.fields.forEach((field, index) => {
@@ -166,24 +158,22 @@
         container.append(create('h5', 'field-section-title', field.section));
       }
       lastSection = field.section;
-      const optionalAnalysis = isRecord && field.label === '내가 분석한 내용';
+      const optional = (prompt.optionalFields || []).includes(field.label) || field.label.includes('기타 사항');
       const group = create('div', 'prompt-field');
       const inputId = `input-${steps[active].id}-${steps[active].prompts[activePrompt].id}-${field.id}`;
-      const label = create('label', '', field.label);
+      const label = create('label', '', field.label + (optional && !field.label.includes('선택') ? ' (선택)' : ''));
       label.htmlFor = inputId;
       const input = create('textarea', 'prompt-input');
       input.id = inputId;
       input.name = field.id;
       input.rows = 3;
-      input.required = !optionalAnalysis;
+      input.required = !optional;
       input.value = draft.values[index];
       input.placeholder = field.placeholder || '내용을 입력하거나 자료를 붙여 넣으세요.';
-      const fieldHint = writingGuides[prompt.id]?.fieldHints[field.label];
-      const hint = create('p', 'field-hint', optionalAnalysis
-        ? '직접 분석한 내용이 없으면 비워두세요. 생성 시 ‘사용자 분석 미입력’으로 표시합니다.'
-        : field.isAttachment ? '양식 내용이나 파일명을 적어주세요. 실제 파일은 AI 대화에 직접 첨부해야 합니다.' : fieldHint || '');
+      const fieldHint = writingGuides[prompt.id]?.fieldHints?.[field.label];
+      const hint = create('p', 'field-hint', fieldHint || (optional ? '선택 입력입니다. 모르는 내용은 비워 두세요.' : field.isAttachment ? '실제 파일은 AI 채팅에 직접 첨부하세요.' : ''));
       hint.id = `${inputId}-hint`;
-      hint.hidden = !field.isAttachment && !optionalAnalysis && !fieldHint;
+      hint.hidden = !field.isAttachment && !optional && !fieldHint;
       const error = create('p', 'field-error', '이 항목을 입력해주세요. 모르면 ‘확인 필요’라고 적을 수 있습니다.');
       error.id = `${inputId}-error`;
       error.hidden = !draft.invalid.has(index);
@@ -201,7 +191,7 @@
       });
       group.append(label, input, hint, error);
       container.append(group);
-      fieldControls.push({ input, error, optionalAnalysis });
+      fieldControls.push({ input, error, optional });
     });
   }
   function changeRecords(removeIndex) {
@@ -238,7 +228,7 @@
     const prompt = steps[active].prompts[activePrompt];
     if (activeView === 'guide') {
       guideScrolls.set(prompt.id, { guide: $('guide-scroll').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
-    } else if (activeView === 'example') {
+    } else if (['example', 'decision-example'].includes(activeView)) {
       exampleScrolls.set(prompt.id, { text: $('example-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 });
     } else if (activeView !== 'setup') {
       currentDraft().scroll = { input: $('input-scroll').scrollTop || 0, output: $('prompt-text').scrollTop || 0, outer: $('dialog-scroll').scrollTop || 0 };
@@ -259,8 +249,8 @@
       item.append(number, content);
       return item;
     }));
-    const caseValues = instructor?.prompts[prompt.id]?.values;
-    const examples = caseValues && Object.keys(caseValues).length ? Object.entries(caseValues).slice(0, 3).map(([label, text]) => ({title: label, items: [{label: '인수인계 사례', text: text.length > 280 ? text.slice(0, 280) + '… (전체 내용은 입력·프롬프트에서 확인)' : text}]})) : guide.examples;
+    const caseValues = instructor?.prompts?.[prompt.id]?.values;
+    const examples = caseValues && Object.keys(caseValues).length ? Object.entries(caseValues).slice(0, 3).map(([label, text]) => ({title: label, items: [{label: '청년인턴 가상 사례', text: text.length > 280 ? text.slice(0, 280) + '… (전체 내용은 입력·프롬프트에서 확인)' : text}]})) : guide.examples;
     $('guide-examples').replaceChildren(...examples.map(example => {
       const section = create('section', 'guide-example');
       section.append(create('h4', '', example.title));
@@ -274,10 +264,10 @@
   }
   function showView(view, focusTab = false) {
     rememberScroll();
-    activeView = active === 0 ? 'input' : view === 'example' && !instructor ? 'guide' : view;
+    activeView = active === 0 ? 'input' : ['example', 'decision-example'].includes(view) && !instructor ? 'guide' : view;
     const decisionIndex = steps[active].prompts.findIndex(prompt => prompt.kind === 'decision');
-    if (activeView === 'decision' && decisionIndex < 0) activeView = 'input';
-    activePrompt = activeView === 'decision' ? decisionIndex : activeInputPrompt;
+    if (['decision', 'decision-example'].includes(activeView) && decisionIndex < 0) activeView = 'input';
+    activePrompt = ['decision', 'decision-example'].includes(activeView) ? decisionIndex : activeInputPrompt;
     const prompt = steps[active].prompts[activePrompt];
     const isWorkflow = prompt.kind === 'document-workflow';
     $('start-writing').innerHTML = isWorkflow ? '프롬프트 확인하기 <span aria-hidden="true">→</span>' : '이해했어요, 입력 시작하기 <span aria-hidden="true">→</span>';
@@ -286,8 +276,9 @@
     updateResult();
     renderGuide();
     $('guide-panel').hidden = activeView !== 'guide';
-    $('prompt-panel').hidden = activeView === 'guide' || activeView === 'example' || activeView === 'setup';
-    $('example-panel').hidden = activeView !== 'example';
+    $('prompt-panel').hidden = activeView === 'guide' || ['example', 'decision-example'].includes(activeView) || activeView === 'setup';
+    $('example-panel').hidden = !['example', 'decision-example'].includes(activeView);
+    $('example-panel').setAttribute('aria-labelledby', activeView === 'decision-example' ? 'view-decision-example-tab' : 'view-example-tab');
     $('setup-panel').hidden = activeView !== 'setup';
     $('setup-status').textContent = '';
     ['copy-skill-name', 'copy-skill-description', 'copy-skill-instructions', 'copy-skill-check'].forEach(id => { $(id).disabled = false; });
@@ -295,18 +286,15 @@
     $('copy-example').disabled = false;
     if (instructor && active > 0) {
       const sample = instructor.prompts[prompt.id];
-      const decision = steps[active].prompts.find(item => item.kind === 'decision');
-      // Early-process examples precede the user's selection or outline confirmation.
-      const decisionResult = decision && !['research-plan', 'idea-brainstorm', 'report-outline', 'decision'].includes(prompt.kind) ? instructor.prompts[decision.id]?.result : '';
-      $('example-title').textContent = isWorkflow ? 'Claude 양식 작성 진행 예시' : prompt.kind === 'report-outline' ? '개요 초안 · 확정 전 검토'
+      $('example-title').textContent = activeView === 'decision-example' ? '수강생 선택 후 기록 · 별도 시연' : isWorkflow ? 'Claude 양식 작성 진행 예시' : prompt.kind === 'report-outline' ? '개요 초안 · 확정 전 검토'
         : prompt.kind === 'report-body' ? '본문 초안 · 최종 점검' : `${steps[active].number} · ${prompt.title} 작성 결과`;
-      $('example-hint').textContent = isWorkflow ? '최신 초안과 빈 HWPX 양식을 Claude에 첨부하는 교육용 진행 예시입니다. 실제 문서 작성·검증·다운로드는 hwpx-writer 스킬을 사용할 수 있는 Claude에서 진행합니다.' : '미리 준비한 교육용 예시입니다. 입력을 수정해도 이 결과는 바뀌지 않습니다.';
+      $('example-hint').textContent = activeView === 'decision-example' ? '가상 수강생이 선택과 이유를 입력한 뒤의 기록입니다. 앞선 추천만으로 자동 확정되는 내용이 아닙니다.' : isWorkflow ? '최신 초안과 빈 HWPX 양식을 Claude에 첨부하는 교육용 진행 예시입니다. 실제 문서 작성·검증·다운로드는 hwpx-writer 스킬을 사용할 수 있는 Claude에서 진행합니다.' : '미리 준비한 교육용 예시입니다. 입력을 수정해도 이 결과는 바뀌지 않습니다.';
       $('copy-example').textContent = isWorkflow ? '진행 예시 복사' : '작성 결과 복사';
-      $('example-text').textContent = `${instructor.notice}\n\n${sample?.result || ''}${decisionResult ? '\n\n━━━━━━━━━━━━━━━━━━━━\n내 결정 반영 결과\n\n' + decisionResult : ''}`;
+      $('example-text').textContent = instructor.notice + '\n\n' + (sample?.result || '');
     }
-    $('review-guide').hidden = active === 0 || activeView === 'decision' || prompt.kind === 'skill-setup';
+    $('review-guide').hidden = active === 0 || ['decision', 'decision-example'].includes(activeView) || prompt.kind === 'skill-setup';
     $('view-tabs').hidden = active === 0;
-    $('prompt-tabs').hidden = activeView === 'decision' || $('prompt-tabs').children.length < 2;
+    $('prompt-tabs').hidden = ['decision', 'decision-example'].includes(activeView) || $('prompt-tabs').children.length < 2;
     Array.from($('view-tabs').children).forEach(tab => {
       const selected = tab.id === `view-${activeView}-tab`;
       tab.setAttribute('aria-selected', String(selected));
@@ -321,7 +309,7 @@
     $('prompt-text').scrollTop = scroll.output || 0;
     $('guide-scroll').scrollTop = guideScroll.guide || 0;
     $('example-text').scrollTop = exampleScroll.text || 0;
-    $('dialog-scroll').scrollTop = (activeView === 'guide' ? guideScroll.outer : activeView === 'example' ? exampleScroll.outer : scroll.outer) || 0;
+    $('dialog-scroll').scrollTop = (activeView === 'guide' ? guideScroll.outer : ['example', 'decision-example'].includes(activeView) ? exampleScroll.outer : scroll.outer) || 0;
     initialized = true;
     if (focusTab) $(`view-${activeView}-tab`).focus({preventScroll:true});
   }
@@ -331,9 +319,9 @@
     event.preventDefault();
     const draft = currentDraft();
     draft.invalid.clear();
-    fieldControls.forEach(({ input, error, optionalAnalysis }, index) => {
+    fieldControls.forEach(({ input, error, optional }, index) => {
       draft.values[index] = input.value;
-      const missing = !optionalAnalysis && !input.value.trim();
+      const missing = !optional && !input.value.trim();
       if (missing) draft.invalid.add(index);
       input.setAttribute('aria-invalid', String(missing));
       error.hidden = !missing;
@@ -346,14 +334,13 @@
       fieldControls[[...draft.invalid][0]].input.focus();
       return;
     }
-    draft.result = builder.build(draft.template, draft.values.map((value, index) =>
-      fieldControls[index].optionalAnalysis && !value.trim() ? '사용자 분석 미입력' : value));
+    draft.result = builder.build(draft.template, draft.values);
     draft.hasGenerated = true;
     draft.message = steps[active].prompts[activePrompt].kind === 'decision'
       ? '내 결정문을 완성했습니다. 진행 중인 AI 채팅에 붙여 넣어 결과 요약을 갱신하세요.'
       : steps[active].prompts[activePrompt].includesCommon
         ? '프롬프트를 완성했습니다. 복사해 진행 중인 AI 채팅에 이어서 붙여 넣으세요.'
-        : '공통 지침을 포함한 프롬프트를 완성했습니다. 확인하고 복사하세요.';
+        : '프롬프트를 완성했습니다. 확인하고 복사하세요.';
     draft.messageError = false;
     updateResult();
     $('prompt-text').scrollTop = 0;
@@ -366,31 +353,34 @@
     activeInputPrompt = 0;
     activePrompt = 0;
     const step = steps[index];
-    if (initialProcess && instructor) {
+    if (initialProcess) {
       const processIndex = step.prompts.findIndex(prompt => prompt.kind === initialProcess);
       if (processIndex >= 0) activeInputPrompt = activePrompt = processIndex;
     }
-    $('dialog-kicker').textContent = index === 0 ? '공통 지침 · 모든 단계에 자동 포함' : `STEP ${step.number} / ${totalSteps}`;
+    $('dialog-kicker').textContent = index === 0 ? '공통 원칙 · 모든 단계에 자동 포함' : step.isAppendix ? 'APPENDIX · 선택 부록' : `STEP ${step.number} / ${totalSteps}`;
     $('dialog-title').textContent = step.title;
     $('dialog-description').textContent = step.subtitle;
     $('dialog-decision').textContent = step.decision;
     $('dialog-image').src = imagePath(index);
     $('prev-step').disabled = index === 0;
     $('next-step').disabled = index === steps.length - 1;
-    $('step-count').textContent = index === 0 ? `START / ${totalSteps}` : `${step.number} / ${totalSteps}`;
+    $('step-count').textContent = index === 0 ? `START / ${totalSteps}` : step.isAppendix ? '선택 부록' : `${step.number} / ${totalSteps}`;
     $('view-tabs').replaceChildren();
     const isWorkflow = step.prompts[0].kind === 'document-workflow';
     const isSetup = step.prompts[0].kind === 'skill-setup';
     const views = isSetup ? [['setup', '스킬 추가 안내'], ['input', '확인 프롬프트']]
       : [['guide', '작성 요령'], ['input', isWorkflow ? '프롬프트' : '입력·프롬프트']];
     if (step.prompts.some(prompt => prompt.kind === 'decision')) views.push(['decision', '내 결정 기록']);
-    if (instructor) views.push(['example', isWorkflow ? '진행 예시' : '완성 예시']);
-    if (instructor && step.id === 'step-7') views.unshift(['setup', '스킬 추가']);
+    if (instructor && !isSetup) {
+      views.push(['example', isWorkflow ? '진행 예시' : '응답 예시']);
+      if (step.prompts.some(prompt => prompt.kind === 'decision')) views.push(['decision-example', '선택 후 예시']);
+    }
+
     if (index > 0) views.forEach(([view, title], i) => {
       const tab = create('button', '', title);
       tab.id = `view-${view}-tab`; tab.type = 'button';
       tab.setAttribute('role', 'tab');
-      tab.setAttribute('aria-controls', view === 'setup' ? 'setup-panel' : view === 'guide' ? 'guide-panel' : view === 'example' ? 'example-panel' : 'prompt-panel');
+      tab.setAttribute('aria-controls', view === 'setup' ? 'setup-panel' : view === 'guide' ? 'guide-panel' : ['example', 'decision-example'].includes(view) ? 'example-panel' : 'prompt-panel');
       tab.addEventListener('click', () => showView(view));
       tab.addEventListener('keydown', event => {
         let target;
@@ -413,7 +403,7 @@
       $('prompt-tabs').append(tab);
     });
     if (!modal.open) modal.showModal();
-    showView(index === 0 ? 'input' : isSetup ? 'setup' : instructor ? (initialProcess === 'report-body' ? 'example' : 'input') : 'guide');
+    showView(index === 0 ? 'input' : isSetup ? 'setup' : instructor ? (['report-body', 'report-final'].includes(initialProcess) ? 'example' : 'input') : 'guide');
     syncScrollLock();
     $('dialog-scroll').scrollTop = 0;
     $('dialog-title').focus({preventScroll:true});
@@ -442,7 +432,7 @@
     field.remove();$(buttonId).focus({preventScroll:true});return success;
   }
   $('copy-example').addEventListener('click', async () => {
-    if (!instructor || activeView !== 'example') return;
+    if (!instructor || !['example', 'decision-example'].includes(activeView)) return;
     const text = $('example-text').textContent;
     const revision = viewRevision;
     $('copy-example').disabled = true;
@@ -516,7 +506,8 @@
   function handleHash() {
     const index = steps.findIndex(step => `#${step.id}` === location.hash);
     if (index >= 0) {
-      const initialProcess = instructor && index === 6 && new URLSearchParams(location.search).get('process') === 'body' ? 'report-body' : null;
+      const process = new URLSearchParams(location.search).get('process');
+      const initialProcess = steps[index].id === 'step-9' ? ({body: 'report-body', final: 'report-final'}[process] || null) : null;
       openStep(index, false, initialProcess);
     }
     else if (modal.open) modal.close();

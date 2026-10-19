@@ -79,7 +79,7 @@
 
     fields.forEach((field, index) => {
       const value = values[index] == null ? '' : String(values[index]);
-      result += template.slice(cursor, field.start) + (value.trim() ? value : field.token);
+      result += template.slice(cursor, field.start) + (value.trim() ? value : '');
       cursor = field.end;
     });
 

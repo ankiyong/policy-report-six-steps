@@ -85,7 +85,7 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
   .prompt-panel{flex:1 0 380px;min-height:380px}
 }
 
-/* 두 역할 모두 공통 카드와 7단계이며, 마지막 단계의 내용은 역할에 맞게 표시합니다. */
+/* 공통 원칙 + 정규 9단계 + 선택 부록. */
 @media(min-width:1100px){
   .gallery{grid-template-columns:repeat(12,minmax(0,1fr))}
   .gallery .thumb{grid-column:span 3;height:clamp(290px,24vw,390px)}
@@ -264,3 +264,9 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
 .setup-sources a{text-decoration:underline;text-underline-offset:3px}
 .setup-status{flex-shrink:0;min-height:35px;padding:9px 24px;border-top:1px solid var(--line);margin:0;background:#f4f7f3;font-size:12px}
 @media(max-width:899px){.setup-panel{min-height:440px;max-height:80dvh}.setup-scroll{padding:20px}.setup-grid{grid-template-columns:1fr;gap:25px}.setup-heading h3{font-size:20px}.setup-materials{padding:18px}}
+
+/* 선택 부록을 정규 수업과 구분합니다. */
+.gallery .thumb.appendix-card{grid-column:1 / -1;height:220px}
+.appendix-card .card-image{object-position:center 42%;filter:saturate(.35) brightness(.7)}
+.appendix-card .card-content{max-width:800px}
+@media(min-width:1100px){.gallery .thumb:nth-child(9),.gallery .thumb:nth-child(10){grid-column:span 6}.gallery .thumb.appendix-card{grid-column:1 / -1;height:220px}}

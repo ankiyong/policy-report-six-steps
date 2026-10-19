@@ -30,10 +30,10 @@
     const keys = Array.from(params.keys());
     if (params.getAll('mode').length !== 1 || params.get('mode') !== 'instructor') return fallback;
     if (keys.some(key => key !== 'mode' && key !== 'process')) return fallback;
-    if (params.getAll('process').length > 1 || (params.has('process') && params.get('process') !== 'body')) return fallback;
+    if (params.getAll('process').length > 1 || (params.has('process') && !['body', 'final'].includes(params.get('process')))) return fallback;
     const hash = match[2] || '';
-    if (hash && !/^#(?:common|step-[1-7])$/.test(hash)) return fallback;
-    return 'practice.html?mode=instructor' + (params.has('process') ? '&process=body' : '') + hash;
+    if (hash && !/^#(?:common|step-[1-9]|appendix-skill)$/.test(hash)) return fallback;
+    return 'practice.html?mode=instructor' + (params.has('process') ? '&process=' + params.get('process') : '') + hash;
   }
 
   function protectedLocation() {

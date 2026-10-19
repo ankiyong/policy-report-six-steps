@@ -27,7 +27,7 @@
 - 10단계 ‘구성 정하기’에는 볼 사람·강조할 제안·독자에게 바라는 이해나 결정의 세 항목을 입력합니다. 원하는 분위기는 기타 사항입니다. 추출·생성·대조는 앞선 기록을 이어 쓰고 기타 사항만 선택 입력합니다.
 
 ## PDF 원문과 실습용 프롬프트
-- lecture.pdf: 사용자가 새로 첨부한 첫 번째 PDF를 원본 그대로 교체했습니다(18쪽). 웹의 기존 10장 슬라이드와 승인된 9단계 설명 이미지는 유지하므로 PDF와 웹의 페이지 구성이 다릅니다.
+- lecture.pdf: 사용자가 첨부한 18쪽 PDF 원본입니다. 강사용 페이지 첫 번째 슬라이드쇼는 표지·강사 소개를 포함한 18쪽 전체를 같은 순서로 표시합니다.
 - card-news-lecture.pdf: 두 번째 첨부 PDF의 33~39쪽만 추출한 7쪽 강의안입니다. 강사용 페이지에 별도 슬라이드쇼, 원문 보기·다운로드, 10단계 실습 연결을 제공합니다.
 - 원문은 ‘한 장의 정책 제안 포스터’를 다룹니다. 여러 장 카드뉴스로 재구성하지 않았습니다.
 - 10단계의 ‘PDF 원문’ 탭에서 36~39쪽의 프롬프트 4개를 각각 복사할 수 있습니다. 원문 위치를 표시하며, card-news-prompts.txt로 모두 내려받을 수 있습니다.
@@ -51,7 +51,7 @@
 - content-plan.json: 수업 구성·프롬프트·작성 기준. 180분은 보고서 수업만 해당하며 10단계 포함 총시간은 미지정
 - prompts-student.txt, prompts.txt: 전체 실습용 프롬프트
 - card-news-prompts.txt: PDF 원문 프롬프트 4개
-- instructor.html, assets/js/lecture.js: 기존 보고서 슬라이드
+- instructor.html, assets/js/lecture.js: 첨부 PDF 18쪽 전체 슬라이드
 - assets/js/card-news-lecture.js, assets/css/card-news-lecture.css: 33~39쪽 별도 슬라이드쇼
 - assets/js/skill-setup.js, hwpx-writer-instructions.md: 선택 부록 자료
 

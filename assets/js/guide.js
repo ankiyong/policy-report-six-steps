@@ -240,12 +240,17 @@
     const guide = writingGuides[prompt.id];
     if (!guide) return;
     $('guide-goal').textContent = guide.goal;
+    for (const name of ['output', 'workflow']) {
+      $('guide-' + name + '-section').hidden = !guide[name];
+      $('guide-' + name).textContent = guide[name] || '';
+    }
     $('guide-rules').replaceChildren(...guide.rules.map((rule, index) => {
       const item = create('li');
       const number = create('span', 'guide-rule-number', String(index + 1).padStart(2, '0'));
       number.setAttribute('aria-hidden', 'true');
       const content = create('div');
-      content.append(create('h4', '', rule.title), create('p', '', rule.text), create('span', 'guide-field-tag', rule.fields));
+      content.append(create('h4', '', rule.title), create('p', '', rule.text));
+      if (rule.fields) content.append(create('span', 'guide-field-tag', rule.fields));
       item.append(number, content);
       return item;
     }));

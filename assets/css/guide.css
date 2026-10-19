@@ -282,3 +282,11 @@ dialog{border:0;padding:0;color:var(--ink);background:var(--paper);max-width:non
 @media(max-width:600px){#source-text{padding:18px;font-size:12px}.lesson-materials{font-size:10px;gap:8px 12px;margin-bottom:12px}.view-tabs{overflow-x:auto}.view-tabs button{flex-shrink:0}}
 
 .card-link[href="#step-10"] .card-image{filter:brightness(.55) saturate(.6)}
+
+/* 보고서 작성 기준과 실습 진행 방법을 구분합니다. */
+.guide-summary{margin-top:22px;padding:20px 24px;border:1px solid #dce7df;border-radius:16px;background:#f6faf7}
+.guide-summary h3{margin:0 0 8px;font-size:16px;color:#25483f}
+.guide-summary p{margin:0;font-size:13px;line-height:1.85;color:#56675e;overflow-wrap:anywhere}
+.guide-workflow{background:#fff;border-style:dashed}
+.guide-summary[hidden]{display:none}
+@media(max-width:736px){.guide-summary{padding:17px 18px}}

@@ -45,7 +45,7 @@
   ],
   [
     "AI와 보고서를 쓸수록 기획이 더 중요하다",
-    "첨부 PDF 원문: 1~5단계 기획, 보고서 작성, 최종 점검. 사람은 방향과 판단 기준을 더 명확하게 정합니다."
+    "1~8단계에서 정한 목적·근거·선택이 9단계 보고서의 기준이 됩니다. 사람은 생각·근거 확인·선택을, AI는 정리·질문·대안 비교를 맡습니다. 9단계는 AI 초안 작성 → 사람의 근거·판단 검토 → AI 수정·최종안 작성 순서이며 최종 확인은 사람이 합니다. 작성·검토 중 발견한 빈틈은 해당 기획 단계로 돌아가 보완합니다."
   ],
   [
     "AI와 함께 기획하기",
@@ -88,7 +88,7 @@
   let timer = null;
   let expanded = false;
   let previousFocus = null;
-  const imagePath = index => index === 9 ? 'images/lecture-02-nine-stages.png' : 'images/lecture-uploaded-' + String(index + 1).padStart(2, '0') + '.webp';
+  const imagePath = index => index === 9 ? 'images/lecture-02-nine-stages.png' : index === 10 ? 'images/lecture-03-nine-stages.png' : 'images/lecture-uploaded-' + String(index + 1).padStart(2, '0') + '.webp';
   const keyboardHint = '화면 클릭·터치: 다음 장 · ← → / Page Up·Down: 이동 · Space·Enter: 다음 장 · Home 처음 · End 마지막';
 
   function stopAutoplay(message) {
